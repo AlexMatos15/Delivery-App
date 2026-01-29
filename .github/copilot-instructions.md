@@ -8,9 +8,11 @@
 ## Authentication & Authorization
 - **Framework**: Laravel Breeze provides login/logout, registration, password reset, and email verification.
 - **User Types**: Users have a `type` enum (client, admin, shop) and `is_admin` boolean flag in [app/Models/User.php](app/Models/User.php).
+- **User Status**: Users have an `is_active` boolean flag; inactive users are logged out on request via [app/Http/Middleware/EnsureUserIsActive.php](app/Http/Middleware/EnsureUserIsActive.php).
 - **Admin Middleware**: [app/Http/Middleware/EnsureAdmin.php](app/Http/Middleware/EnsureAdmin.php) restricts routes to admins; register as 'admin' alias in [bootstrap/app.php](bootstrap/app.php).
-- **Role Helpers**: User model includes `isAdmin()`, `isShop()`, `isClient()` methods for conditional logic.
+- **Role Helpers**: User model includes `isAdmin()`, `isShop()`, `isClient()`, `isActive()` methods for conditional logic.
 - **Profile Routes**: `/profile` (edit), `/my-profile` (view), authenticated endpoints at [routes/web.php](routes/web.php).
+- **Admin Routes**: `/admin/users` lists all users; admins can activate/deactivate or delete users (see [app/Http/Controllers/Admin/UserManagementController.php](app/Http/Controllers/Admin/UserManagementController.php)).
 - **Email Verification**: Enabled by default via Breeze; users must verify email before accessing protected routes.
 - **Change Password**: `/confirm-password` and `/password` endpoints managed by Breeze auth routes in [routes/auth.php](routes/auth.php).
 
