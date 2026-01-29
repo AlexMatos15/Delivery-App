@@ -15,11 +15,37 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
+        // Criar usuário admin
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Admin User',
+            'email' => 'admin@delivery-app.com',
+            'password' => bcrypt('password'),
+            'type' => 'admin',
+            'is_admin' => true,
+            'is_active' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        // Criar usuário cliente teste
+        User::factory()->create([
+            'name' => 'Cliente Teste',
+            'email' => 'cliente@delivery-app.com',
+            'password' => bcrypt('password'),
+            'type' => 'client',
+            'is_admin' => false,
+            'is_active' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        // Criar usuário loja teste
+        User::factory()->create([
+            'name' => 'Loja Teste',
+            'email' => 'loja@delivery-app.com',
+            'password' => bcrypt('password'),
+            'type' => 'shop',
+            'is_admin' => false,
+            'is_active' => true,
+            'email_verified_at' => now(),
         ]);
     }
 }
