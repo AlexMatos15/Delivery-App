@@ -43,6 +43,31 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
+    }
+
+    /**
+     * Check if user is an admin.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->is_admin || $this->type === 'admin';
+    }
+
+    /**
+     * Check if user is a shop owner.
+     */
+    public function isShop(): bool
+    {
+        return $this->type === 'shop';
+    }
+
+    /**
+     * Check if user is a client.
+     */
+    public function isClient(): bool
+    {
+        return $this->type === 'client';
     }
 }

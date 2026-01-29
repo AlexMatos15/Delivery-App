@@ -27,6 +27,17 @@
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
+        </div>
+
+        <div>
+            <x-input-label for="type" :value="__('User Type')" />
+            <div class="mt-2 p-3 bg-gray-100 rounded text-gray-700 text-sm">
+                <span class="capitalize font-semibold">{{ $user->type }}</span>
+                @if ($user->is_admin)
+                    <span class="ml-2 px-2 py-1 bg-red-200 text-red-800 rounded text-xs font-bold">Admin</span>
+                @endif
+            </div>
+            <p class="mt-1 text-xs text-gray-500">{{ __('User type cannot be changed here. Contact support if needed.') }}</p>
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div>
