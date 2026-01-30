@@ -1,135 +1,155 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Checkout') }}
-        </h2>
-    </x-slot>
+@extends('adminlte::page')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('error'))
-                <div class="mb-4 p-4 bg-red-100 text-red-800 rounded">
-                    {{ session('error') }}
-                </div>
-            @endif
+@section('title', 'Finalizar Compra')
 
-            <form method="POST" action="{{ route('orders.store') }}">
-                @csrf
+@section('content')
+    <div class="container-fluid">
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+            </div>
+        @endif
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Left Column: Order Details -->
-                    <div class="lg:col-span-2 space-y-6">
-                        <!-- Delivery Address -->
-                        <div class="bg-white rounded-lg shadow-sm p-6">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-lg font-semibold">{{ __('Delivery Address') }}</h3>
-                                <a href="{{ route('addresses.create') }}" class="text-blue-600 hover:underline text-sm">
-                                    + {{ __('Add New Address') }}
+        <form method="POST" action="{{ route('orders.store') }}">
+            @csrf
+
+            <div class="row">
+                <!-- Left Column: Order Details -->
+                <div class="col-lg-8">
+                    <!-- Delivery Address -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h3 class="card-title d-flex justify-content-between align-items-center">
+                                <span>Endereço de Entrega</span>
+                                <a href="{{ route('addresses.create') }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-plus"></i> Novo Endereço
                                 </a>
-                            </div>
-                            
+                            </h3>
+                        </div>
+                        <div class="card-body">
                             @if ($addresses->count() > 0)
-                                <div class="space-y-3">
+                                <div class="address-list">
                                     @foreach ($addresses as $address)
-                                        <label class="flex items-start p-4 border rounded-lg cursor-pointer hover:bg-gray-50 {{ $address->is_default ? 'border-blue-500 bg-blue-50' : 'border-gray-300' }}">
+                                        <label class="custom-control custom-radio mb-3">
                                             <input type="radio" 
+                                                   class="custom-control-input" 
                                                    name="address_id" 
                                                    value="{{ $address->id }}" 
                                                    {{ $address->is_default ? 'checked' : '' }}
-                                                   required
-                                                   class="mt-1 text-blue-600">
-                                            <div class="ml-3 flex-1">
-                                                <div class="font-medium">{{ $address->label }}</div>
-                                                <div class="text-sm text-gray-600">
-                                                    {{ $address->street }}, {{ $address->number }}
-                                                    @if($address->complement)
-                                                        - {{ $address->complement }}
-                                                    @endif
-                                                </div>
-                                                <div class="text-sm text-gray-600">
-                                                    {{ $address->neighborhood }} - {{ $address->city }}/{{ $address->state }}
-                                                </div>
-                                                <div class="text-sm text-gray-600">{{ $address->zip_code }}</div>
+                                                   required>
+                                            <div class="custom-control-label w-100 p-3 border rounded {{ $address->is_default ? 'border-primary bg-light' : '' }}">
+                                                <div class="font-weight-bold">{{ $address->label }}</div>
+                                                <div class="text-muted">{{ $address->street }}, {{ $address->number }}</div>
+                                                @if($address->complement)
+                                                    <div class="text-muted text-sm">{{ $address->complement }}</div>
+                                                @endif
+                                                <div class="text-muted">{{ $address->neighborhood }} - {{ $address->city }}/{{ $address->state }}</div>
+                                                <div class="text-muted">{{ $address->zip_code }}</div>
+                                                @if ($address->is_default)
+                                                    <span class="badge badge-primary mt-2">Padrão</span>
+                                                @endif
                                             </div>
-                                            @if ($address->is_default)
-                                                <span class="ml-2 px-2 py-1 bg-blue-200 text-blue-800 text-xs rounded">{{ __('Default') }}</span>
-                                            @endif
                                         </label>
                                     @endforeach
                                 </div>
-                                <x-input-error class="mt-2" :messages="$errors->get('address_id')" />
+                                @error('address_id')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
                             @else
-                                <div class="text-center py-6 bg-yellow-50 border border-yellow-200 rounded">
-                                    <p class="text-gray-700 mb-3">{{ __('You need to add a delivery address first.') }}</p>
-                                    <a href="{{ route('addresses.create') }}" class="inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                                        {{ __('Add Address') }}
+                                <div class="alert alert-warning">
+                                    <p class="mb-0">Você precisa adicionar um endereço de entrega primeiro.</p>
+                                    <a href="{{ route('addresses.create') }}" class="btn btn-primary btn-sm mt-2">
+                                        <i class="fas fa-plus"></i> Adicionar Endereço
                                     </a>
                                 </div>
                             @endif
                         </div>
+                    </div>
 
-                        <!-- Payment Method -->
-                        <div class="bg-white rounded-lg shadow-sm p-6">
-                            <h3 class="text-lg font-semibold mb-4">{{ __('Payment Method') }}</h3>
-                            
-                            <div class="space-y-3">
-                                <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
-                                    <input type="radio" name="payment_method" value="credit_card" checked required class="text-blue-600">
-                                    <span class="ml-3">{{ __('Credit Card') }}</span>
+                    <!-- Payment Method -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h3 class="card-title">Método de Pagamento</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="payment-methods">
+                                <label class="custom-control custom-radio mb-3">
+                                    <input type="radio" name="payment_method" value="credit_card" checked required class="custom-control-input">
+                                    <div class="custom-control-label w-100 p-3 border rounded">
+                                        <i class="fas fa-credit-card"></i> Cartão de Crédito
+                                    </div>
                                 </label>
                                 
-                                <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
-                                    <input type="radio" name="payment_method" value="debit_card" required class="text-blue-600">
-                                    <span class="ml-3">{{ __('Debit Card') }}</span>
+                                <label class="custom-control custom-radio mb-3">
+                                    <input type="radio" name="payment_method" value="debit_card" required class="custom-control-input">
+                                    <div class="custom-control-label w-100 p-3 border rounded">
+                                        <i class="fas fa-credit-card"></i> Cartão de Débito
+                                    </div>
                                 </label>
                                 
-                                <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
-                                    <input type="radio" name="payment_method" value="pix" required class="text-blue-600">
-                                    <span class="ml-3">{{ __('PIX') }}</span>
+                                <label class="custom-control custom-radio mb-3">
+                                    <input type="radio" name="payment_method" value="pix" required class="custom-control-input">
+                                    <div class="custom-control-label w-100 p-3 border rounded">
+                                        <i class="fas fa-mobile-alt"></i> PIX
+                                    </div>
                                 </label>
                                 
-                                <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
-                                    <input type="radio" name="payment_method" value="cash" required class="text-blue-600">
-                                    <span class="ml-3">{{ __('Cash') }}</span>
+                                <label class="custom-control custom-radio mb-3">
+                                    <input type="radio" name="payment_method" value="cash" required class="custom-control-input">
+                                    <div class="custom-control-label w-100 p-3 border rounded">
+                                        <i class="fas fa-money-bill"></i> Dinheiro
+                                    </div>
                                 </label>
                             </div>
-                            <x-input-error class="mt-2" :messages="$errors->get('payment_method')" />
-                        </div>
-
-                        <!-- Order Notes -->
-                        <div class="bg-white rounded-lg shadow-sm p-6">
-                            <h3 class="text-lg font-semibold mb-4">{{ __('Order Notes') }}</h3>
-                            <textarea name="notes" 
-                                      rows="3" 
-                                      placeholder="{{ __('Any special instructions for your order?') }}"
-                                      class="w-full border-gray-300 rounded-md">{{ old('notes') }}</textarea>
-                            <x-input-error class="mt-2" :messages="$errors->get('notes')" />
+                            @error('payment_method')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 
-                    <!-- Right Column: Order Summary -->
-                    <div class="lg:col-span-1">
-                        <div class="bg-white rounded-lg shadow-sm p-6 sticky top-6">
-                            <h3 class="text-lg font-semibold mb-4">{{ __('Order Summary') }}</h3>
+                    <!-- Order Notes -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h3 class="card-title">Observações do Pedido</h3>
+                        </div>
+                        <div class="card-body">
+                            <textarea name="notes" 
+                                      rows="3" 
+                                      placeholder="Alguma instrução especial para seu pedido?"
+                                      class="form-control">{{ old('notes') }}</textarea>
+                            @error('notes')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Right Column: Order Summary -->
+                <div class="col-lg-4">
+                    <div class="card sticky-top">
+                        <div class="card-header">
+                            <h3 class="card-title">Resumo do Pedido</h3>
+                        </div>
+                        <div class="card-body">
                             <!-- Cart Items -->
-                            <div class="space-y-3 mb-4 max-h-64 overflow-y-auto">
+                            <div class="mb-3" style="max-height: 250px; overflow-y: auto;">
                                 @foreach ($cart as $item)
-                                    <div class="flex items-center text-sm">
-                                        <div class="w-12 h-12 flex-shrink-0">
+                                    <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                                        <div style="width: 50px; height: 50px; flex-shrink: 0;">
                                             @if ($item['image'])
                                                 <img src="{{ asset('storage/' . $item['image']) }}" 
                                                      alt="{{ $item['name'] }}" 
-                                                     class="w-full h-full object-cover rounded">
+                                                     class="w-100 h-100 object-cover rounded" style="object-fit: cover;">
                                             @else
-                                                <div class="w-full h-full bg-gray-200 rounded"></div>
+                                                <div class="w-100 h-100 bg-light rounded"></div>
                                             @endif
                                         </div>
-                                        <div class="ml-3 flex-1">
-                                            <div class="font-medium">{{ $item['name'] }}</div>
-                                            <div class="text-gray-600">{{ $item['quantity'] }}x R$ {{ number_format($item['price'], 2, ',', '.') }}</div>
+                                        <div class="ml-3 flex-grow-1">
+                                            <div class="font-weight-bold small">{{ $item['name'] }}</div>
+                                            <div class="text-muted text-sm">{{ $item['quantity'] }}x R$ {{ number_format($item['price'], 2, ',', '.') }}</div>
                                         </div>
-                                        <div class="font-medium">
+                                        <div class="font-weight-bold text-right">
                                             R$ {{ number_format($item['price'] * $item['quantity'], 2, ',', '.') }}
                                         </div>
                                     </div>
@@ -137,36 +157,36 @@
                             </div>
 
                             <!-- Totals -->
-                            <div class="border-t pt-4 space-y-2">
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-600">{{ __('Subtotal') }}</span>
+                            <div class="border-top pt-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Subtotal:</span>
                                     <span>R$ {{ number_format($subtotal, 2, ',', '.') }}</span>
                                 </div>
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-600">{{ __('Delivery Fee') }}</span>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span>Taxa de Entrega:</span>
                                     <span>R$ {{ number_format($deliveryFee, 2, ',', '.') }}</span>
                                 </div>
-                                <div class="flex justify-between text-lg font-bold border-t pt-2">
-                                    <span>{{ __('Total') }}</span>
-                                    <span class="text-green-600">R$ {{ number_format($total, 2, ',', '.') }}</span>
+                                <div class="d-flex justify-content-between border-top pt-3 font-weight-bold text-lg">
+                                    <span>Total:</span>
+                                    <span class="text-success">R$ {{ number_format($total, 2, ',', '.') }}</span>
                                 </div>
                             </div>
 
                             <!-- Actions -->
-                            <div class="mt-6 space-y-3">
+                            <div class="mt-4">
                                 @if ($addresses->count() > 0)
-                                    <button type="submit" class="w-full px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 font-semibold">
-                                        {{ __('Place Order') }}
+                                    <button type="submit" class="btn btn-success btn-block btn-lg">
+                                        <i class="fas fa-check"></i> Finalizar Pedido
                                     </button>
                                 @endif
-                                <a href="{{ route('cart.index') }}" class="block text-center px-6 py-3 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
-                                    {{ __('Back to Cart') }}
+                                <a href="{{ route('cart.index') }}" class="btn btn-secondary btn-block mt-2">
+                                    <i class="fas fa-arrow-left"></i> Voltar ao Carrinho
                                 </a>
                             </div>
                         </div>
                     </div>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
-</x-app-layout>
+@endsection

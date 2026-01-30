@@ -1,87 +1,112 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Add Address') }}
-        </h2>
-    </x-slot>
+@extends('adminlte::page')
 
-    <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <form method="POST" action="{{ route('addresses.store') }}">
-                        @csrf
+@section('title', 'Adicionar Endereço')
 
-                        <div class="mb-4">
-                            <x-input-label for="label" :value="__('Label (e.g., Home, Work)')" />
-                            <x-text-input id="label" name="label" type="text" class="mt-1 block w-full" :value="old('label')" required autofocus />
-                            <x-input-error class="mt-2" :messages="$errors->get('label')" />
-                        </div>
+@section('content')
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Adicionar Novo Endereço</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ route('addresses.store') }}">
+                            @csrf
 
-                        <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <x-input-label for="zip_code" :value="__('ZIP Code')" />
-                                <x-text-input id="zip_code" name="zip_code" type="text" class="mt-1 block w-full" :value="old('zip_code')" required placeholder="00000-000" />
-                                <x-input-error class="mt-2" :messages="$errors->get('zip_code')" />
+                            <div class="form-group">
+                                <label for="label">Rótulo (ex: Casa, Trabalho)</label>
+                                <input id="label" name="label" type="text" class="form-control @error('label') is-invalid @enderror" value="{{ old('label') }}" required autofocus>
+                                @error('label')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
                             </div>
-                            <div>
-                                <x-input-label for="state" :value="__('State')" />
-                                <x-text-input id="state" name="state" type="text" class="mt-1 block w-full" :value="old('state')" required maxlength="2" placeholder="SP" />
-                                <x-input-error class="mt-2" :messages="$errors->get('state')" />
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="zip_code">CEP</label>
+                                    <input id="zip_code" name="zip_code" type="text" class="form-control @error('zip_code') is-invalid @enderror" value="{{ old('zip_code') }}" required placeholder="00000-000">
+                                    @error('zip_code')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="state">Estado</label>
+                                    <input id="state" name="state" type="text" class="form-control @error('state') is-invalid @enderror" value="{{ old('state') }}" required maxlength="2" placeholder="SP">
+                                    @error('state')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="mb-4">
-                            <x-input-label for="city" :value="__('City')" />
-                            <x-text-input id="city" name="city" type="text" class="mt-1 block w-full" :value="old('city')" required />
-                            <x-input-error class="mt-2" :messages="$errors->get('city')" />
-                        </div>
-
-                        <div class="mb-4">
-                            <x-input-label for="neighborhood" :value="__('Neighborhood')" />
-                            <x-text-input id="neighborhood" name="neighborhood" type="text" class="mt-1 block w-full" :value="old('neighborhood')" required />
-                            <x-input-error class="mt-2" :messages="$errors->get('neighborhood')" />
-                        </div>
-
-                        <div class="grid grid-cols-3 gap-4 mb-4">
-                            <div class="col-span-2">
-                                <x-input-label for="street" :value="__('Street')" />
-                                <x-text-input id="street" name="street" type="text" class="mt-1 block w-full" :value="old('street')" required />
-                                <x-input-error class="mt-2" :messages="$errors->get('street')" />
+                            <div class="form-group">
+                                <label for="city">Cidade</label>
+                                <input id="city" name="city" type="text" class="form-control @error('city') is-invalid @enderror" value="{{ old('city') }}" required>
+                                @error('city')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
                             </div>
-                            <div>
-                                <x-input-label for="number" :value="__('Number')" />
-                                <x-text-input id="number" name="number" type="text" class="mt-1 block w-full" :value="old('number')" required />
-                                <x-input-error class="mt-2" :messages="$errors->get('number')" />
+
+                            <div class="form-group">
+                                <label for="neighborhood">Bairro</label>
+                                <input id="neighborhood" name="neighborhood" type="text" class="form-control @error('neighborhood') is-invalid @enderror" value="{{ old('neighborhood') }}" required>
+                                @error('neighborhood')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
                             </div>
-                        </div>
 
-                        <div class="mb-4">
-                            <x-input-label for="complement" :value="__('Complement (optional)')" />
-                            <x-text-input id="complement" name="complement" type="text" class="mt-1 block w-full" :value="old('complement')" placeholder="Apt, Suite, Floor, etc." />
-                            <x-input-error class="mt-2" :messages="$errors->get('complement')" />
-                        </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-9">
+                                    <label for="street">Rua</label>
+                                    <input id="street" name="street" type="text" class="form-control @error('street') is-invalid @enderror" value="{{ old('street') }}" required>
+                                    @error('street')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label for="number">Número</label>
+                                    <input id="number" name="number" type="text" class="form-control @error('number') is-invalid @enderror" value="{{ old('number') }}" required>
+                                    @error('number')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
 
-                        <div class="mb-4">
-                            <x-input-label for="reference" :value="__('Reference Point (optional)')" />
-                            <textarea id="reference" name="reference" rows="2" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" placeholder="Near the bakery, blue building, etc.">{{ old('reference') }}</textarea>
-                            <x-input-error class="mt-2" :messages="$errors->get('reference')" />
-                        </div>
+                            <div class="form-group">
+                                <label for="complement">Complemento (opcional)</label>
+                                <input id="complement" name="complement" type="text" class="form-control @error('complement') is-invalid @enderror" value="{{ old('complement') }}" placeholder="Apt, Sala, Andar, etc.">
+                                @error('complement')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
 
-                        <div class="mb-6">
-                            <label class="flex items-center">
-                                <input type="checkbox" name="is_default" value="1" {{ old('is_default') ? 'checked' : '' }} class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                                <span class="ml-2 text-sm text-gray-600">{{ __('Set as default address') }}</span>
-                            </label>
-                        </div>
+                            <div class="form-group">
+                                <label for="reference">Ponto de Referência (opcional)</label>
+                                <textarea id="reference" name="reference" rows="2" class="form-control @error('reference') is-invalid @enderror" placeholder="Perto da padaria, prédio azul, etc.">{{ old('reference') }}</textarea>
+                                @error('reference')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
 
-                        <div class="flex items-center gap-4">
-                            <x-primary-button>{{ __('Save Address') }}</x-primary-button>
-                            <a href="{{ route('addresses.index') }}" class="text-gray-600 hover:underline">{{ __('Cancel') }}</a>
-                        </div>
-                    </form>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" name="is_default" value="1" {{ old('is_default') ? 'checked' : '' }}>
+                                    <span>Definir como endereço padrão</span>
+                                </label>
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Salvar Endereço
+                                </button>
+                                <a href="{{ route('addresses.index') }}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

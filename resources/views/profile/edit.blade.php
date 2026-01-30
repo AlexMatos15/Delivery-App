@@ -1,49 +1,60 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
+@extends('adminlte::page')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <!-- Quick Links -->
-            <div class="bg-white shadow sm:rounded-lg p-6">
-                <h3 class="text-lg font-semibold mb-4">{{ __('Quick Links') }}</h3>
-                <div class="flex flex-wrap gap-3">
-                    <a href="{{ route('addresses.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        {{ __('Manage Addresses') }}
-                    </a>
-                    <a href="{{ route('orders.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        {{ __('My Orders') }}
-                    </a>
+@section('title', 'Editar Perfil')
+
+@section('content')
+    <div class="container-fluid">
+        <!-- Atalhos Rápidos -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Atalhos Rápidos</h3>
+                    </div>
+                    <div class="card-body">
+                        <a href="{{ route('addresses.index') }}" class="btn btn-primary mr-2">
+                            <i class="fas fa-map-marker-alt"></i> Gerenciar Endereços
+                        </a>
+                        <a href="{{ route('orders.index') }}" class="btn btn-info">
+                            <i class="fas fa-box"></i> Meus Pedidos
+                        </a>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <!-- Atualizar Informações -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Informações do Perfil</h3>
+                    </div>
+                    <div class="card-body">
+                        @include('profile.partials.update-profile-information-form')
+                    </div>
                 </div>
-            </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
+                <!-- Alterar Senha -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Alterar Senha</h3>
+                    </div>
+                    <div class="card-body">
+                        @include('profile.partials.update-password-form')
+                    </div>
                 </div>
-            </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
+                <!-- Deletar Conta -->
+                <div class="card">
+                    <div class="card-header bg-danger">
+                        <h3 class="card-title">Deletar Conta</h3>
+                    </div>
+                    <div class="card-body">
+                        @include('profile.partials.delete-user-form')
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

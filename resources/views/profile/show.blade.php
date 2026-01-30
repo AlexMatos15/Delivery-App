@@ -1,46 +1,120 @@
-@extends('layouts.app')
+@extends('adminlte::page')
+
+@section('title', 'Meu Perfil')
 
 @section('content')
-<div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 text-gray-900 dark:text-gray-100">
-                <h2 class="text-2xl font-bold mb-6">{{ __('My Profile') }}</h2>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Perfil do Usuário</h3>
+                        <div class="card-tools">
+                            <a href="{{ route('profile.edit') }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-edit"></i> Editar Perfil
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <strong>Nome:</strong>
+                            </div>
+                            <div class="col-md-9">
+                                {{ $user->name }}
+                            </div>
+                        </div>
 
-                <div class="space-y-6">
-                    <div>
-                        <label class="block text-sm font-medium">{{ __('Name') }}</label>
-                        <p class="mt-2 text-gray-700 dark:text-gray-300">{{ Auth::user()->name }}</p>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <strong>Email:</strong>
+                            </div>
+                            <div class="col-md-9">
+                                {{ $user->email }}
+                                @if ($user->email_verified_at)
+                                    <span class="badge badge-success">
+                                        <i class="fas fa-check"></i> Verificado
+                                    </span>
+                                @else
+                                    <span class="badge badge-warning">
+                                        <i class="fas fa-exclamation"></i> Não verificado
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <strong>Tipo de Conta:</strong>
+                            </div>
+                            <div class="col-md-9">
+                                @php
+                                    $typeLabels = [
+                                        'client' => 'Cliente',
+                                        'shop' => 'Loja',
+                                        'admin' => 'Administrador',
+                                    ];
+                                    $typeBadgeColors = [
+                                        'client' => 'primary',
+                                        'shop' => 'success',
+                                        'admin' => 'danger',
+                                    ];
+                                @endphp
+                                <span class="badge badge-{{ $typeBadgeColors[$user->type] ?? 'secondary' }}">
+                                    {{ $typeLabels[$user->type] ?? ucfirst($user->type) }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <strong>Status:</strong>
+                            </div>
+                            <div class="col-md-9">
+                                @if ($user->is_active)
+                                    <span class="badge badge-success">
+                                        <i class="fas fa-check-circle"></i> Ativo
+                                    </span>
+                                @else
+                                    <span class="badge badge-danger">
+                                        <i class="fas fa-times-circle"></i> Inativo
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <strong>Data de Cadastro:</strong>
+                            </div>
+                            <div class="col-md-9">
+                                {{ $user->created_at->format('d/m/Y H:i') }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <strong>Última Atualização:</strong>
+                            </div>
+                            <div class="col-md-9">
+                                {{ $user->updated_at->format('d/m/Y H:i') }}
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium">{{ __('Email') }}</label>
-                        <p class="mt-2 text-gray-700 dark:text-gray-300">{{ Auth::user()->email }}</p>
-                        @if (Auth::user()->email_verified_at)
-                            <p class="mt-1 text-sm text-green-600">{{ __('Email verified') }}</p>
-                        @else
-                            <p class="mt-1 text-sm text-yellow-600">{{ __('Email not verified') }}</p>
-                        @endif
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium">{{ __('User Type') }}</label>
-                        <p class="mt-2 text-gray-700 dark:text-gray-300 capitalize">{{ Auth::user()->type }}</p>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium">{{ __('Member Since') }}</label>
-                        <p class="mt-2 text-gray-700 dark:text-gray-300">{{ Auth::user()->created_at->format('M d, Y') }}</p>
-                    </div>
-
-                    <div class="pt-6 border-t border-gray-200 dark:border-gray-700">
-                        <a href="{{ route('profile.edit') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                            {{ __('Edit Profile') }}
+                    <div class="card-footer">
+                        <a href="{{ route('profile.edit') }}" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Editar Informações
+                        </a>
+                        <a href="{{ route('password.request') }}" class="btn btn-warning">
+                            <i class="fas fa-lock"></i> Alterar Senha
+                        </a>
+                        <a href="{{ route('dashboard') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Voltar
                         </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection

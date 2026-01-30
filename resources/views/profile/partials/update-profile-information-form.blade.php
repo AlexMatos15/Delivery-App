@@ -1,75 +1,72 @@
-<section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Profile Information') }}
-        </h2>
+<form method="post" action="{{ route('profile.update') }}">
+    @csrf
+    @method('patch')
 
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __("Update your account's profile information and email address.") }}
-        </p>
-    </header>
+    @php
+        $typeLabels = [
+            'client' => 'Cliente',
+            'shop' => 'Loja',
+            'admin' => 'Administrador',
+        ];
+    @endphp
 
-    <form id="send-verification" method="post" action="{{ route('verification.send') }}">
-        @csrf
-    </form>
-
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
-        @csrf
-        @method('patch')
-
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+    @if (session('status') === 'profile-updated')
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> Perfil atualizado com sucesso!
+            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
         </div>
+    @endif
 
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
-        </div>
+    <div class="form-group">
+        <label for="name">Nome</label>
+        <input id="name" name="name" type="text" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $user->name) }}" required autofocus>
+        @error('name')
+            <span class="invalid-feedback">{{ $message }}</span>
+        @enderror
+    </div>
 
-        <div>
-            <x-input-label for="type" :value="__('User Type')" />
-            <div class="mt-2 p-3 bg-gray-100 rounded text-gray-700 text-sm">
-                <span class="capitalize font-semibold">{{ $user->type }}</span>
-                @if ($user->is_admin)
-                    <span class="ml-2 px-2 py-1 bg-red-200 text-red-800 rounded text-xs font-bold">Admin</span>
-                @endif
-            </div>
-            <p class="mt-1 text-xs text-gray-500">{{ __('User type cannot be changed here. Contact support if needed.') }}</p>
-
-            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                <div>
-                    <p class="text-sm mt-2 text-gray-800">
-                        {{ __('Your email address is unverified.') }}
-
-                        <button form="send-verification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            {{ __('Click here to re-send the verification email.') }}
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $user->email) }}" required>
+        @error('email')
+            <span class="invalid-feedback">{{ $message }}</span>
+        @enderror
+        
+        @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
+            <div class="alert alert-warning alert-sm mt-2">
+                <small>
+                    Seu email não foi verificado.
+                    <form id="send-verification" method="post" action="{{ route('verification.send') }}" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="btn btn-link btn-sm" style="padding: 0;">
+                            Clique aqui para reenviar o email de verificação.
                         </button>
-                    </p>
-
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
-                    @endif
+                    </form>
+                </small>
+            </div>
+            @if (session('status') === 'verification-link-sent')
+                <div class="alert alert-success alert-sm mt-2">
+                    <small>Um novo email de verificação foi enviado para seu endereço de email.</small>
                 </div>
             @endif
-        </div>
+        @endif
+    </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
-
-            @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
-                >{{ __('Saved.') }}</p>
-            @endif
+    <div class="form-group">
+        <label>Tipo de Conta</label>
+        <div class="alert alert-info">
+            <small>
+                <strong>{{ $typeLabels[$user->type] ?? ucfirst($user->type) }}</strong>
+                @if ($user->is_admin)
+                    <span class="badge badge-danger">Admin</span>
+                @endif
+                <br>
+                <em>O tipo de conta não pode ser alterado. Entre em contato com o suporte se necessário.</em>
+            </small>
         </div>
-    </form>
-</section>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> Salvar Alterações
+    </button>
+</form>

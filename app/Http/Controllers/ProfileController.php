@@ -22,6 +22,16 @@ class ProfileController extends Controller
     }
 
     /**
+     * Display the user's profile (read-only view).
+     */
+    public function show(Request $request): View
+    {
+        return view('profile.show', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    /**
      * Update the user's profile information.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
