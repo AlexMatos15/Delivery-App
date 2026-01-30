@@ -69,6 +69,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user is a shop owner (loja).
+     */
+    public function isLoja(): bool
+    {
+        return $this->type === 'shop';
+    }
+
+    /**
+     * Check if user is a client (cliente).
+     */
+    public function isCliente(): bool
+    {
+        return $this->type === 'client';
+    }
+
+    /**
      * Check if user is a shop owner.
      */
     public function isShop(): bool
