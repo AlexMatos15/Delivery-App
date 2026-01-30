@@ -18,9 +18,80 @@
             </div>
         </div>
 
-        <!-- Menu rápido -->
-        <div class="row">
-            <div class="col-md-3">
+        @if (Auth::user()->isAdmin())
+            <!-- Admin Panel Quick Access -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="fas fa-shield-alt"></i> <strong>Modo Administrador</strong> - Acesso total ao painel de controle
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="small-box bg-primary">
+                        <div class="inner">
+                            <h3>Painel</h3>
+                            <p>Admin</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <a href="{{ route('admin.dashboard') }}" class="small-box-footer">
+                            Acessar <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3>Usuários</h3>
+                            <p>Gerenciar</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <a href="{{ route('admin.users.index') }}" class="small-box-footer">
+                            Listar <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>Produtos</h3>
+                            <p>Catálogo</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <a href="{{ route('admin.products.index') }}" class="small-box-footer">
+                            Gerenciar <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="small-box bg-danger">
+                        <div class="inner">
+                            <h3>Categorias</h3>
+                            <p>Organizar</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-th"></i>
+                        </div>
+                        <a href="{{ route('admin.categories.index') }}" class="small-box-footer">
+                            Gerenciar <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @else
+            <!-- Client Menu -->
+            <div class="row">
                 <div class="small-box bg-info">
                     <div class="inner">
                         <h3>{{ Auth::user()->orders_count ?? 0 }}</h3>
