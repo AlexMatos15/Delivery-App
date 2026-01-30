@@ -5,6 +5,14 @@
 - Web requests flow through route files (start with [routes/web.php](routes/web.php)) to controllers in [app/Http/Controllers](app/Http/Controllers), then render Blade views in [resources/views](resources/views).
 - Eloquent models live in [app/Models](app/Models), with migrations in [database/migrations](database/migrations) and factories/seeders in [database/factories](database/factories) and [database/seeders](database/seeders).
 
+## Data Model
+- **Users**: Multi-role users (client, admin, shop) with authentication and status tracking.
+- **Categories**: Product categorization with slug, image, and ordering support.
+- **Products**: Shop inventory with pricing, stock, images, and category relationships; belongs to shop (User).
+- **Addresses**: User delivery addresses with default address support.
+- **Orders**: Complete order tracking with status workflow (pending → confirmed → preparing → out_for_delivery → delivered/cancelled), payment tracking, and shop-customer relationships.
+- **OrderItems**: Order line items with product snapshots (name, price) to preserve historical data.
+
 ## Authentication & Authorization
 - **Framework**: Laravel Breeze provides login/logout, registration, password reset, and email verification.
 - **User Types**: Users have a `type` enum (client, admin, shop) and `is_admin` boolean flag in [app/Models/User.php](app/Models/User.php).

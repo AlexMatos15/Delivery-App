@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -78,5 +79,45 @@ class User extends Authenticatable
     public function isClient(): bool
     {
         return $this->type === 'client';
+    }
+
+    /**
+     * Get all products for this shop.
+     */
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    /**
+     * Get all addresses for this user.
+     */
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(Address::class);
+    }
+
+    /**
+     * Get default address.
+     */
+    public function defaultAddress()
+    {
+        return $this->hasOne(Address::class)->where('is_default', true);
+    }
+
+    /**
+     * Get all orders placed by this customer.
+     */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Get all orders received by this shop.
+     */
+    public function shopOrders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'shop_id');
     }
 }
