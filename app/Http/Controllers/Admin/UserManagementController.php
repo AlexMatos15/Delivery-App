@@ -16,7 +16,7 @@ class UserManagementController extends Controller
     {
         $users = User::orderBy('created_at', 'desc')->paginate(15);
         
-        return view('admin.users.index', [
+        return view('admin.users.index_adminlte', [
             'users' => $users,
         ]);
     }
