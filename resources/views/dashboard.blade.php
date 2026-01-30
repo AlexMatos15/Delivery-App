@@ -92,65 +92,67 @@
         @else
             <!-- Client Menu -->
             <div class="row">
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h3>{{ Auth::user()->orders_count ?? 0 }}</h3>
-                        <p>Meus Pedidos</p>
+                <div class="col-md-3">
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            <h3>{{ Auth::user()->orders_count ?? 0 }}</h3>
+                            <p>Meus Pedidos</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <a href="{{ route('orders.index') }}" class="small-box-footer">
+                            Ver tudo <i class="fas fa-arrow-circle-right"></i>
+                        </a>
                     </div>
-                    <div class="icon">
-                        <i class="fas fa-shopping-cart"></i>
-                    </div>
-                    <a href="{{ route('orders.index') }}" class="small-box-footer">
-                        Ver tudo <i class="fas fa-arrow-circle-right"></i>
-                    </a>
                 </div>
-            </div>
 
-            <div class="col-md-3">
-                <div class="small-box bg-success">
-                    <div class="inner">
-                        <h3>{{ Auth::user()->addresses_count ?? 0 }}</h3>
-                        <p>Endereços</p>
+                <div class="col-md-3">
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>{{ Auth::user()->addresses_count ?? 0 }}</h3>
+                            <p>Endereços</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <a href="{{ route('addresses.index') }}" class="small-box-footer">
+                            Gerenciar <i class="fas fa-arrow-circle-right"></i>
+                        </a>
                     </div>
-                    <div class="icon">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </div>
-                    <a href="{{ route('addresses.index') }}" class="small-box-footer">
-                        Gerenciar <i class="fas fa-arrow-circle-right"></i>
-                    </a>
                 </div>
-            </div>
 
-            <div class="col-md-3">
-                <div class="small-box bg-warning">
-                    <div class="inner">
-                        <h3>Catálogo</h3>
-                        <p>Produtos</p>
+                <div class="col-md-3">
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3>Catálogo</h3>
+                            <p>Produtos</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <a href="{{ route('products.index') }}" class="small-box-footer">
+                            Navegar <i class="fas fa-arrow-circle-right"></i>
+                        </a>
                     </div>
-                    <div class="icon">
-                        <i class="fas fa-box"></i>
-                    </div>
-                    <a href="{{ route('products.index') }}" class="small-box-footer">
-                        Navegar <i class="fas fa-arrow-circle-right"></i>
-                    </a>
                 </div>
-            </div>
 
-            <div class="col-md-3">
-                <div class="small-box bg-danger">
-                    <div class="inner">
-                        <h3>Carrinho</h3>
-                        <p>Itens</p>
+                <div class="col-md-3">
+                    <div class="small-box bg-danger">
+                        <div class="inner">
+                            <h3>Carrinho</h3>
+                            <p>Itens</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <a href="{{ route('cart.index') }}" class="small-box-footer">
+                            Meu Carrinho <i class="fas fa-arrow-circle-right"></i>
+                        </a>
                     </div>
-                    <div class="icon">
-                        <i class="fas fa-shopping-bag"></i>
-                    </div>
-                    <a href="{{ route('cart.index') }}" class="small-box-footer">
-                        Meu Carrinho <i class="fas fa-arrow-circle-right"></i>
-                    </a>
                 </div>
             </div>
-        </div>
+        @endif
 
         <!-- Atalhos rápidos -->
         <div class="row mt-4">
