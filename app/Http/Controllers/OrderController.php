@@ -17,12 +17,14 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = auth()->user()->orders()
+        $cliente = auth()->user();
+        
+        $orders = $cliente->orders()
             ->with(['items.product', 'shop'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('orders.index', compact('orders'));
+        return view('orders.index', compact('cliente', 'orders'));
     }
 
     /**

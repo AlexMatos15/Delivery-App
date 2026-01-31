@@ -16,6 +16,8 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        $admin = auth()->user();
+        
         // Total counts
         $totalOrders = Order::count();
         $totalUsers = User::where('type', 'client')->count();
@@ -52,6 +54,7 @@ class DashboardController extends Controller
             ->get();
 
         return view('admin.dashboard_adminlte', compact(
+            'admin',
             'totalOrders',
             'totalUsers',
             'totalProducts',

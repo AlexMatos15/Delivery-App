@@ -7,7 +7,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <h2>Dashboard da Loja</h2>
-                <p class="text-muted">Bem-vindo, {{ $user->name }}!</p>
+                <p class="text-muted">Bem-vindo, {{ $loja->name }}!</p>
             </div>
         </div>
 
@@ -54,7 +54,7 @@
                     <span class="info-box-icon bg-info"><i class="fas fa-cube"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">Produtos Cadastrados</span>
-                        <span class="info-box-number">{{ $user->products()->count() }}</span>
+                        <span class="info-box-number">{{ $loja->products()->count() }}</span>
                     </div>
                 </div>
             </div>
@@ -64,7 +64,7 @@
                     <span class="info-box-icon bg-success"><i class="fas fa-shopping-bag"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">Pedidos Recebidos</span>
-                        <span class="info-box-number">{{ \App\Models\Order::whereHas('items', function ($q) { $q->whereIn('product_id', $user->products()->pluck('id')); })->count() }}</span>
+                        <span class="info-box-number">{{ \App\Models\Order::whereHas('items', function ($q) use ($loja) { $q->whereIn('product_id', $loja->products()->pluck('id')); })->count() }}</span>
                     </div>
                 </div>
             </div>
@@ -74,7 +74,7 @@
                     <span class="info-box-icon bg-warning"><i class="fas fa-exclamation-triangle"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">Estoque Baixo</span>
-                        <span class="info-box-number">{{ $user->products()->where('stock', '<=', 10)->count() }}</span>
+                        <span class="info-box-number">{{ $loja->products()->where('stock', '<=', 10)->count() }}</span>
                     </div>
                 </div>
             </div>
@@ -84,7 +84,7 @@
                     <span class="info-box-icon bg-danger"><i class="fas fa-clock"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">Pedidos Pendentes</span>
-                        <span class="info-box-number">{{ \App\Models\Order::whereHas('items', function ($q) { $q->whereIn('product_id', $user->products()->pluck('id')); })->where('status', 'pending')->count() }}</span>
+                        <span class="info-box-number">{{ \App\Models\Order::whereHas('items', function ($q) use ($loja) { $q->whereIn('product_id', $loja->products()->pluck('id')); })->where('status', 'pending')->count() }}</span>
                     </div>
                 </div>
             </div>
