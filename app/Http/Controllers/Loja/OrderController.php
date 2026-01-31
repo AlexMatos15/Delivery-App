@@ -49,17 +49,7 @@ class OrderController extends Controller
      */
     public function show(Order $order): View
     {
-        $user = auth()->user();
-        $productIds = $user->products()->pluck('id')->toArray();
-        
-        // Verificar se o pedido contém produtos desta loja
-        $hasOwnershipOfOrder = $order->items()
-            ->whereIn('product_id', $productIds)
-            ->exists();
-        
-        if (!$hasOwnershipOfOrder) {
-            abort(403, 'Você não tem permissão para visualizar este pedido.');
-        }
+        $this->authorize('view', $order);
         
         $order->load(['customer', 'items.product', 'address']);
         
@@ -71,17 +61,7 @@ class OrderController extends Controller
      */
     public function updateStatus(Order $order): \Illuminate\Http\RedirectResponse
     {
-        $user = auth()->user();
-        $productIds = $user->products()->pluck('id')->toArray();
-        
-        // Verificar autorização
-        $hasOwnershipOfOrder = $order->items()
-            ->whereIn('product_id', $productIds)
-            ->exists();
-        
-        if (!$hasOwnershipOfOrder) {
-            abort(403, 'Você não tem permissão para atualizar este pedido.');
-        }
+        $this->authorize('update', $order);
         
         $status = request()->validate([
             'status' => 'required|in:pending,confirmed,preparing,out_for_delivery,delivered,cancelled',

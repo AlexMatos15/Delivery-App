@@ -1,0 +1,3 @@
+@if($isAuthorized())
+    {{ $slot }}
+@endif

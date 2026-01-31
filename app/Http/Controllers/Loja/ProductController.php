@@ -47,6 +47,8 @@ class ProductController extends Controller
      */
     public function store(): RedirectResponse
     {
+        $this->authorize('create', Product::class);
+        
         $user = auth()->user();
         
         $validated = request()->validate([
@@ -88,11 +90,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product): View
     {
-        $user = auth()->user();
-        
-        if ($product->user_id !== $user->id) {
-            abort(403, 'Você não tem permissão para editar este produto.');
-        }
+        $this->authorize('update', $product);
         
         $categories = \App\Models\Category::where('is_active', true)->get();
         
@@ -104,11 +102,7 @@ class ProductController extends Controller
      */
     public function update(Product $product): RedirectResponse
     {
-        $user = auth()->user();
-        
-        if ($product->user_id !== $user->id) {
-            abort(403, 'Você não tem permissão para atualizar este produto.');
-        }
+        $this->authorize('update', $product);
         
         $validated = request()->validate([
             'name' => 'required|string|max:255',
@@ -151,11 +145,7 @@ class ProductController extends Controller
      */
     public function toggleActive(Product $product): RedirectResponse
     {
-        $user = auth()->user();
-        
-        if ($product->user_id !== $user->id) {
-            abort(403, 'Você não tem permissão para modificar este produto.');
-        }
+        $this->authorize('toggle', $product);
         
         $product->update(['is_active' => !$product->is_active]);
         
@@ -169,11 +159,7 @@ class ProductController extends Controller
      */
     public function destroy(Product $product): RedirectResponse
     {
-        $user = auth()->user();
-        
-        if ($product->user_id !== $user->id) {
-            abort(403, 'Você não tem permissão para deletar este produto.');
-        }
+        $this->authorize('delete', $product);
         
         // Deletar imagem se existir
         if ($product->image) {
