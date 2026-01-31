@@ -44,16 +44,6 @@
                         @include('profile.partials.update-password-form')
                     </div>
                 </div>
-
-                <!-- Deletar Conta -->
-                <div class="card">
-                    <div class="card-header bg-danger">
-                        <h3 class="card-title">Deletar Conta</h3>
-                    </div>
-                    <div class="card-body">
-                        @include('profile.partials.delete-user-form')
-                    </div>
-                </div>
             </div>
         </div>
     </div>
