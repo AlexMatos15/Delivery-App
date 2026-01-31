@@ -8,6 +8,9 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderManagementController;
 use App\Http\Controllers\Loja\DashboardController as LojaDashboardController;
+use App\Http\Controllers\Loja\OrderController as LojaOrderController;
+use App\Http\Controllers\Loja\ProductController as LojaProductController;
+use App\Http\Controllers\Loja\ReportsController as LojaReportsController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
@@ -88,6 +91,24 @@ Route::middleware(['auth', 'verified', 'is_cliente'])->prefix('cliente')->name('
 Route::middleware(['auth', 'verified', 'is_loja'])->prefix('loja')->name('loja.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [LojaDashboardController::class, 'index'])->name('dashboard');
+    
+    // Pedidos
+    Route::prefix('orders')->name('orders.')->group(function () {
+        Route::get('/', [LojaOrderController::class, 'index'])->name('index');
+        Route::get('/{order}', [LojaOrderController::class, 'show'])->name('show');
+        Route::patch('/{order}/status', [LojaOrderController::class, 'updateStatus'])->name('update-status');
+    });
+    
+    // Produtos
+    Route::resource('products', LojaProductController::class);
+    Route::patch('/products/{product}/toggle', [LojaProductController::class, 'toggleActive'])->name('products.toggle');
+    
+    // Relatórios
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/dashboard', [LojaReportsController::class, 'dashboard'])->name('dashboard');
+        Route::get('/sales', [LojaReportsController::class, 'sales'])->name('sales');
+        Route::get('/customers', [LojaReportsController::class, 'customers'])->name('customers');
+    });
 });
 
 /*

@@ -1,106 +1,147 @@
-<x-layouts.loja>
-    <div class="container mt-5">
+@extends('adminlte::page')
+
+@section('title', 'Dashboard da Loja')
+
+@section('content')
+    <div class="container-fluid">
         <div class="row mb-4">
             <div class="col-12">
-                <h1 class="h2">Painel da Loja</h1>
-                <p class="text-muted">Bem-vindo, {{ Auth::user()->name }}!</p>
+                <h2>Dashboard da Loja</h2>
+                <p class="text-muted">Bem-vindo, {{ $user->name }}!</p>
             </div>
         </div>
 
-        <!-- Key Metrics -->
-        <div class="row mb-4">
-            <div class="col-md-6 mb-3">
-                <div class="card border-left-primary">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div>
-                                <h6 class="text-muted font-weight-bold">Pedidos Hoje</h6>
-                                <h2 class="mb-0">{{ $todayOrders ?? 0 }}</h2>
-                            </div>
-                            <i class="fas fa-shopping-cart fa-3x text-primary ml-auto"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <div class="card border-left-success">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div>
-                                <h6 class="text-muted font-weight-bold">Faturamento Hoje</h6>
-                                <h2 class="mb-0">R$ {{ number_format($todayRevenue ?? 0, 2, ',', '.') }}</h2>
-                            </div>
-                            <i class="fas fa-dollar-sign fa-3x text-success ml-auto"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Quick Actions -->
+        <!-- Menu de Atalhos Rápidos -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Ações Rápidas</h5>
-                    </div>
                     <div class="card-body">
-                        <a href="{{ route('loja.orders.index') }}" class="btn btn-primary mr-2">
-                            <i class="fas fa-box"></i> Ver Pedidos
-                        </a>
-                        <a href="{{ route('loja.products.index') }}" class="btn btn-info mr-2">
-                            <i class="fas fa-cube"></i> Gerenciar Produtos
-                        </a>
-                        <a href="{{ route('profile.edit') }}" class="btn btn-secondary">
-                            <i class="fas fa-user"></i> Meu Perfil
-                        </a>
+                        <div class="row text-center">
+                            <div class="col-md-3">
+                                <a href="{{ route('loja.orders.index') }}" class="btn btn-lg btn-primary btn-block mb-2">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    <p>Meus Pedidos</p>
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ route('loja.products.index') }}" class="btn btn-lg btn-info btn-block mb-2">
+                                    <i class="fas fa-cube"></i>
+                                    <p>Meus Produtos</p>
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ route('loja.reports.dashboard') }}" class="btn btn-lg btn-success btn-block mb-2">
+                                    <i class="fas fa-chart-bar"></i>
+                                    <p>Relatórios</p>
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ route('profile.edit') }}" class="btn btn-lg btn-warning btn-block mb-2">
+                                    <i class="fas fa-user"></i>
+                                    <p>Meu Perfil</p>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Recent Orders -->
+        <!-- Informações Iniciais -->
         <div class="row">
-            <div class="col-12">
+            <div class="col-md-3">
+                <div class="info-box">
+                    <span class="info-box-icon bg-info"><i class="fas fa-cube"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Produtos Cadastrados</span>
+                        <span class="info-box-number">{{ $user->products()->count() }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="info-box">
+                    <span class="info-box-icon bg-success"><i class="fas fa-shopping-bag"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Pedidos Recebidos</span>
+                        <span class="info-box-number">{{ \App\Models\Order::whereHas('items', function ($q) { $q->whereIn('product_id', $user->products()->pluck('id')); })->count() }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="info-box">
+                    <span class="info-box-icon bg-warning"><i class="fas fa-exclamation-triangle"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Estoque Baixo</span>
+                        <span class="info-box-number">{{ $user->products()->where('stock', '<=', 10)->count() }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="info-box">
+                    <span class="info-box-icon bg-danger"><i class="fas fa-clock"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Pedidos Pendentes</span>
+                        <span class="info-box-number">{{ \App\Models\Order::whereHas('items', function ($q) { $q->whereIn('product_id', $user->products()->pluck('id')); })->where('status', 'pending')->count() }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Pedidos Recentes</h5>
+                    <div class="card-header bg-primary">
+                        <h3 class="card-title">Próximas Ações</h3>
                     </div>
                     <div class="card-body">
-                        @if(isset($recentOrders) && $recentOrders->count() > 0)
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Pedido</th>
-                                            <th>Cliente</th>
-                                            <th>Data</th>
-                                            <th>Status</th>
-                                            <th>Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($recentOrders as $order)
-                                            <tr>
-                                                <td>{{ $order->order_number }}</td>
-                                                <td>{{ $order->user->name }}</td>
-                                                <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
-                                                <td>
-                                                    <span class="badge badge-info">{{ ucfirst($order->status) }}</span>
-                                                </td>
-                                                <td>R$ {{ number_format($order->total, 2, ',', '.') }}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @else
-                            <p class="text-muted">Nenhum pedido recente.</p>
-                        @endif
+                        <div class="list-group">
+                            <a href="{{ route('loja.products.create') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-plus"></i> Adicionar novo produto
+                            </a>
+                            <a href="{{ route('loja.orders.index') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-list"></i> Visualizar pedidos
+                            </a>
+                            <a href="{{ route('loja.products.index') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-cube"></i> Gerenciar produtos
+                            </a>
+                            <a href="{{ route('loja.reports.dashboard') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-chart-line"></i> Ver relatórios financeiros
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-success">
+                        <h3 class="card-title">Informações Úteis</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-3">
+                                <i class="fas fa-info-circle text-info"></i>
+                                <strong>Visibilidade:</strong> Seus produtos aparecem na loja pública quando ativados.
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-info-circle text-info"></i>
+                                <strong>Pedidos:</strong> Aqui você vê todos os pedidos que contêm seus produtos.
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-info-circle text-info"></i>
+                                <strong>Estoque:</strong> Monitore o estoque dos seus produtos para não perder vendas.
+                            </li>
+                            <li>
+                                <i class="fas fa-info-circle text-info"></i>
+                                <strong>Relatórios:</strong> Acompanhe vendas e métricas financeiras em tempo real.
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</x-layouts.loja>
+@endsection
