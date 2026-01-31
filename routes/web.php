@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardRedirectController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderManagementController;
+use App\Http\Controllers\Loja\DashboardController as LojaDashboardController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
@@ -27,6 +29,13 @@ Route::get('/products/{product}', [ProductController::class, 'show'])->name('pro
 
 /*
 |--------------------------------------------------------------------------
+| DASHBOARD REDIRECT ROUTE (Global)
+|--------------------------------------------------------------------------
+*/
+Route::get('/dashboard', DashboardRedirectController::class)->middleware(['auth', 'verified'])->name('dashboard');
+
+/*
+|--------------------------------------------------------------------------
 | AUTHENTICATED ROUTES (All Users)
 |--------------------------------------------------------------------------
 */
@@ -36,6 +45,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/my-profile', [ProfileController::class, 'show'])->name('profile.show');
+    
+    // Address routes (accessible by all authenticated users)
+    Route::resource('addresses', AddressController::class)->except(['show']);
+    Route::patch('/addresses/{address}/set-default', [AddressController::class, 'setDefault'])->name('addresses.set-default');
+    
+    // Order routes (accessible by all authenticated users)
+    Route::prefix('orders')->name('orders.')->group(function () {
+        Route::get('/', [OrderController::class, 'index'])->name('index');
+        Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
+        Route::post('/', [OrderController::class, 'store'])->name('store');
+        Route::get('/{order}', [OrderController::class, 'show'])->name('show');
+        Route::patch('/{order}/cancel', [OrderController::class, 'cancel'])->name('cancel');
+    });
 });
 
 /*
@@ -56,19 +78,6 @@ Route::middleware(['auth', 'verified', 'is_cliente'])->prefix('cliente')->name('
         Route::delete('/clear', [CartController::class, 'clear'])->name('clear');
         Route::get('/count', [CartController::class, 'count'])->name('count');
     });
-    
-    // Order routes
-    Route::prefix('orders')->name('orders.')->group(function () {
-        Route::get('/', [OrderController::class, 'index'])->name('index');
-        Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
-        Route::post('/', [OrderController::class, 'store'])->name('store');
-        Route::get('/{order}', [OrderController::class, 'show'])->name('show');
-        Route::patch('/{order}/cancel', [OrderController::class, 'cancel'])->name('cancel');
-    });
-    
-    // Address routes
-    Route::resource('addresses', AddressController::class)->except(['show']);
-    Route::patch('/addresses/{address}/set-default', [AddressController::class, 'setDefault'])->name('addresses.set-default');
 });
 
 /*
@@ -77,7 +86,8 @@ Route::middleware(['auth', 'verified', 'is_cliente'])->prefix('cliente')->name('
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'verified', 'is_loja'])->prefix('loja')->name('loja.')->group(function () {
-    // Será implementado em breve
+    // Dashboard
+    Route::get('/dashboard', [LojaDashboardController::class, 'index'])->name('dashboard');
 });
 
 /*
