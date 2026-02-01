@@ -1,53 +1,180 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Create Product') }}
-        </h2>
-    </x-slot>
+@extends('adminlte::page')
 
-    <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data">
-                        @csrf
+@section('title', 'Criar Produto')
 
-                        <div class="mb-4">
-                            <x-input-label for="name" :value="__('Name')" />
-                            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name')" required autofocus />
-                            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+@section('content_header')
+    <h1>Criar Novo Produto</h1>
+@stop
+
+@section('content')
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Informações do Produto</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data">
+                @csrf
+
+                <div class="form-group">
+                    <label for="name">Nome <span class="text-danger">*</span></label>
+                    <input type="text" 
+                           id="name" 
+                           name="name" 
+                           class="form-control @error('name') is-invalid @enderror" 
+                           value="{{ old('name') }}" 
+                           required 
+                           autofocus>
+                    @error('name')
+                        <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="category_id">Categoria <span class="text-danger">*</span></label>
+                    <select id="category_id" 
+                            name="category_id" 
+                            class="form-control @error('category_id') is-invalid @enderror" 
+                            required>
+                        <option value="">Selecione uma categoria</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('category_id')
+                        <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descrição</label>
+                    <textarea id="description" 
+                              name="description" 
+                              rows="3" 
+                              class="form-control @error('description') is-invalid @enderror">{{ old('description') }}</textarea>
+                    @error('description')
+                        <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="price">Preço (R$) <span class="text-danger">*</span></label>
+                            <input type="number" 
+                                   id="price" 
+                                   name="price" 
+                                   step="0.01" 
+                                   min="0" 
+                                   class="form-control @error('price') is-invalid @enderror" 
+                                   value="{{ old('price') }}" 
+                                   required>
+                            @error('price')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
                         </div>
+                    </div>
 
-                        <div class="mb-4">
-                            <x-input-label for="category_id" :value="__('Category')" />
-                            <select id="category_id" name="category_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
-                                <option value="">{{ __('Select a category') }}</option>
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                        {{ $category->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <x-input-error class="mt-2" :messages="$errors->get('category_id')" />
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="promotional_price">Preço Promocional (R$)</label>
+                            <input type="number" 
+                                   id="promotional_price" 
+                                   name="promotional_price" 
+                                   step="0.01" 
+                                   min="0" 
+                                   class="form-control @error('promotional_price') is-invalid @enderror" 
+                                   value="{{ old('promotional_price') }}">
+                            @error('promotional_price')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                            <small class="form-text text-muted">Deve ser menor que o preço normal</small>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="mb-4">
-                            <x-input-label for="description" :value="__('Description')" />
-                            <textarea id="description" name="description" rows="3" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('description') }}</textarea>
-                            <x-input-error class="mt-2" :messages="$errors->get('description')" />
-                        </div>
+                <div class="form-group">
+                    <label for="stock">Estoque <span class="text-danger">*</span></label>
+                    <input type="number" 
+                           id="stock" 
+                           name="stock" 
+                           min="0" 
+                           class="form-control @error('stock') is-invalid @enderror" 
+                           value="{{ old('stock', 0) }}" 
+                           required>
+                    @error('stock')
+                        <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
+                </div>
 
-                        <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <x-input-label for="price" :value="__('Price (R$)')" />
-                                <x-text-input id="price" name="price" type="number" step="0.01" min="0" class="mt-1 block w-full" :value="old('price')" required />
-                                <x-input-error class="mt-2" :messages="$errors->get('price')" />
-                            </div>
+                <div class="form-group">
+                    <label for="image">Imagem do Produto</label>
+                    <div class="custom-file">
+                        <input type="file" 
+                               id="image" 
+                               name="image" 
+                               class="custom-file-input @error('image') is-invalid @enderror" 
+                               accept="image/*">
+                        <label class="custom-file-label" for="image">Escolher arquivo</label>
+                    </div>
+                    @error('image')
+                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                    @enderror
+                    <small class="form-text text-muted">Tamanho máximo: 2MB. Formatos aceitos: JPG, PNG, GIF</small>
+                </div>
 
-                            <div>
-                                <x-input-label for="promotional_price" :value="__('Promotional Price (R$)')" />
-                                <x-text-input id="promotional_price" name="promotional_price" type="number" step="0.01" min="0" class="mt-1 block w-full" :value="old('promotional_price')" />
-                                <x-input-error class="mt-2" :messages="$errors->get('promotional_price')" />
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" 
+                               class="custom-control-input" 
+                               id="is_active" 
+                               name="is_active" 
+                               value="1" 
+                               {{ old('is_active', true) ? 'checked' : '' }}>
+                        <label class="custom-control-label" for="is_active">
+                            Produto Ativo
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" 
+                               class="custom-control-input" 
+                               id="is_featured" 
+                               name="is_featured" 
+                               value="1" 
+                               {{ old('is_featured') ? 'checked' : '' }}>
+                        <label class="custom-control-label" for="is_featured">
+                            Produto em Destaque
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Criar Produto
+                    </button>
+                    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+@stop
+
+@section('js')
+<script>
+    // Update custom file input label with selected filename
+    $('.custom-file-input').on('change', function() {
+        var fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').html(fileName);
+    });
+</script>
+@stop
+
                             </div>
                         </div>
 
