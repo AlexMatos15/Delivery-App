@@ -2,6 +2,12 @@
 
 @section('title', 'Detalhes do Pedido - ' . $order->order_number)
 
+@section('adminlte_css')
+    @php
+        config(['adminlte.layout_topnav' => true]);
+    @endphp
+@stop
+
 @section('content')
     <div class="container-fluid">
         <div class="row mb-4">

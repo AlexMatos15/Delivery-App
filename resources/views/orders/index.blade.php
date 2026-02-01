@@ -2,6 +2,12 @@
 
 @section('title', 'Meus Pedidos')
 
+@section('adminlte_css')
+    @php
+        config(['adminlte.layout_topnav' => true]);
+    @endphp
+@stop
+
 @section('content')
     <div class="container-fluid">
         @if (session('status'))

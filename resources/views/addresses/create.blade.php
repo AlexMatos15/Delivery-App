@@ -2,6 +2,12 @@
 
 @section('title', 'Adicionar Endereço')
 
+@section('adminlte_css')
+    @php
+        config(['adminlte.layout_topnav' => true]);
+    @endphp
+@stop
+
 @section('content')
     <div class="container-fluid">
         <div class="row justify-content-center">

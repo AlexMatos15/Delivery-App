@@ -1,7 +1,11 @@
 @extends('adminlte::page')
 
 @section('title', 'Dashboard da Loja')
-
+@section('adminlte_css')
+    @php
+        config(['adminlte.layout_topnav' => true]);
+    @endphp
+@stop
 @section('content')
     <div class="container-fluid">
         <div class="row mb-4">

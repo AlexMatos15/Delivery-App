@@ -2,6 +2,15 @@
 
 @section('title', 'Editar Perfil')
 
+@section('adminlte_css')
+    @php
+        // Remove sidebar para cliente e loja
+        if (auth()->check() && !auth()->user()->isAdmin()) {
+            config(['adminlte.layout_topnav' => true]);
+        }
+    @endphp
+@stop
+
 @section('content')
     <div class="container-fluid">
         <!-- Atalhos Rápidos -->
