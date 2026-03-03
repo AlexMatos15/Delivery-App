@@ -4,8 +4,32 @@
 
 @section('adminlte_css')
     @php
-        config(['adminlte.layout_topnav' => true]);
+        config([
+            'adminlte.layout_topnav' => true,
+            'adminlte.classes_body' => 'loja',
+            'adminlte.menu' => [
+                [
+                    'text' => 'Painel',
+                    'url' => 'loja/dashboard',
+                    'icon' => 'fas fa-tachometer-alt',
+                ],
+                [
+                    'text' => 'Pedidos',
+                    'url' => 'loja/orders',
+                    'icon' => 'fas fa-box',
+                ],
+                [
+                    'text' => 'Produtos',
+                    'url' => 'loja/products',
+                    'icon' => 'fas fa-cube',
+                ],
+            ],
+        ]);
     @endphp
+@stop
+
+@section('css')
+    @include('loja.partials.styles')
 @stop
 
 @section('content')
@@ -49,7 +73,12 @@
 
                             <!-- Categoria -->
                             <div class="form-group">
-                                <label for="category_id">Categoria *</label>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label for="category_id" class="mb-0">Categoria *</label>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#createCategoryModal">
+                                        <i class="fas fa-plus"></i> Nova Categoria
+                                    </button>
+                                </div>
                                 <select class="form-control @error('category_id') is-invalid @enderror" id="category_id" name="category_id" required>
                                     <option value="">Selecione uma categoria</option>
                                     @foreach ($categories as $category)
@@ -134,6 +163,40 @@
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Criar Categoria -->
+    <div class="modal fade" id="createCategoryModal" tabindex="-1" role="dialog" aria-labelledby="createCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="POST" action="{{ route('loja.categories.store') }}">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createCategoryModalLabel">Criar Nova Categoria</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="new_category_name">Nome da Categoria *</label>
+                            <input type="text" class="form-control" id="new_category_name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new_category_description">Descrição</label>
+                            <textarea class="form-control" id="new_category_description" name="description" rows="3"></textarea>
+                        </div>
+                        <small class="text-muted">A categoria criada ficará ativa imediatamente.</small>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Criar Categoria
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

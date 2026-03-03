@@ -1,129 +1,98 @@
-@extends('adminlte::page')
+@extends('layouts.client')
 
 @section('title', 'Meu Perfil')
 
-@section('adminlte_css')
-    @php
-        // Remove sidebar para cliente e loja
-        if (auth()->check() && !auth()->user()->isAdmin()) {
-            config(['adminlte.layout_topnav' => true]);
-        }
-    @endphp
-@stop
-
 @section('content')
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Perfil do Usuário</h3>
-                        <div class="card-tools">
-                            <a href="{{ route('profile.edit') }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-edit"></i> Editar Perfil
-                            </a>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row mb-3">
-                            <div class="col-md-3">
-                                <strong>Nome:</strong>
-                            </div>
-                            <div class="col-md-9">
-                                {{ $user->name }}
-                            </div>
-                        </div>
+<div class="client-container">
+    <div class="client-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h2 class="client-section-title">👤 Meu Perfil</h2>
+            <a href="{{ route('profile.edit') }}" class="client-btn primary">
+                ✏️ Editar Perfil
+            </a>
+        </div>
 
-                        <div class="row mb-3">
-                            <div class="col-md-3">
-                                <strong>Email:</strong>
-                            </div>
-                            <div class="col-md-9">
-                                {{ $user->email }}
-                                @if ($user->email_verified_at)
-                                    <span class="badge badge-success">
-                                        <i class="fas fa-check"></i> Verificado
-                                    </span>
-                                @else
-                                    <span class="badge badge-warning">
-                                        <i class="fas fa-exclamation"></i> Não verificado
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
+        <div class="client-profile-content">
+            <div class="client-profile-item">
+                <span class="client-profile-label">Nome:</span>
+                <span class="client-profile-value">{{ $user->name }}</span>
+            </div>
 
-                        <div class="row mb-3">
-                            <div class="col-md-3">
-                                <strong>Tipo de Conta:</strong>
-                            </div>
-                            <div class="col-md-9">
-                                @php
-                                    $typeLabels = [
-                                        'client' => 'Cliente',
-                                        'shop' => 'Loja',
-                                        'admin' => 'Administrador',
-                                    ];
-                                    $typeBadgeColors = [
-                                        'client' => 'primary',
-                                        'shop' => 'success',
-                                        'admin' => 'danger',
-                                    ];
-                                @endphp
-                                <span class="badge badge-{{ $typeBadgeColors[$user->type] ?? 'secondary' }}">
-                                    {{ $typeLabels[$user->type] ?? ucfirst($user->type) }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-3">
-                                <strong>Status:</strong>
-                            </div>
-                            <div class="col-md-9">
-                                @if ($user->is_active)
-                                    <span class="badge badge-success">
-                                        <i class="fas fa-check-circle"></i> Ativo
-                                    </span>
-                                @else
-                                    <span class="badge badge-danger">
-                                        <i class="fas fa-times-circle"></i> Inativo
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-3">
-                                <strong>Data de Cadastro:</strong>
-                            </div>
-                            <div class="col-md-9">
-                                {{ $user->created_at->format('d/m/Y H:i') }}
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-3">
-                                <strong>Última Atualização:</strong>
-                            </div>
-                            <div class="col-md-9">
-                                {{ $user->updated_at->format('d/m/Y H:i') }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-footer">
-                        <a href="{{ route('profile.edit') }}" class="btn btn-primary">
-                            <i class="fas fa-edit"></i> Editar Informações
-                        </a>
-                        <a href="{{ route('password.request') }}" class="btn btn-warning">
-                            <i class="fas fa-lock"></i> Alterar Senha
-                        </a>
-                        <a href="{{ route('dashboard') }}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Voltar
-                        </a>
-                    </div>
+            <div class="client-profile-item">
+                <span class="client-profile-label">Email:</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="client-profile-value">{{ $user->email }}</span>
+                    @if ($user->email_verified_at)
+                        <span class="client-badge success">✓ Verificado</span>
+                    @else
+                        <span class="client-badge warning">⚠ Não verificado</span>
+                    @endif
                 </div>
             </div>
+
+            <div class="client-profile-item">
+                <span class="client-profile-label">Tipo de Conta:</span>
+                @php
+                    $typeLabels = [
+                        'client' => 'Cliente',
+                        'shop' => 'Loja',
+                        'admin' => 'Administrador',
+                    ];
+                    $typeBadgeClass = [
+                        'client' => 'primary',
+                        'shop' => 'success',
+                        'admin' => 'error',
+                    ];
+                @endphp
+                <span class="client-badge {{ $typeBadgeClass[$user->type] ?? 'secondary' }}">
+                    {{ $typeLabels[$user->type] ?? ucfirst($user->type) }}
+                </span>
+            </div>
+
+            <div class="client-profile-item">
+                <span class="client-profile-label">Status:</span>
+                @if ($user->is_active)
+                    <span class="client-badge success">✓ Ativo</span>
+                @else
+                    <span class="client-badge error">✕ Inativo</span>
+                @endif
+            </div>
+
+            <div class="client-profile-item">
+                <span class="client-profile-label">Data de Cadastro:</span>
+                <span class="client-profile-value">{{ $user->created_at->format('d/m/Y H:i') }}</span>
+            </div>
+
+            <div class="client-profile-item">
+                <span class="client-profile-label">Última Atualização:</span>
+                <span class="client-profile-value">{{ $user->updated_at->format('d/m/Y H:i') }}</span>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap;">
+            <a href="{{ route('profile.edit') }}" class="client-btn primary">
+                ✏️ Editar Informações
+            </a>
+            <a href="{{ route('password.request') }}" class="client-btn secondary">
+                🔒 Alterar Senha
+            </a>
+            <a href="{{ route('cart.index') }}" class="client-btn secondary">
+                ← Voltar
+            </a>
         </div>
     </div>
+
+    <!-- Atalhos Rápidos -->
+    <div class="client-section">
+        <h3 class="client-section-title">⚡ Atalhos Rápidos</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <a href="{{ route('addresses.index') }}" class="client-btn secondary" style="text-align: center; text-decoration: none;">
+                📍 Gerenciar Endereços
+            </a>
+            <a href="{{ route('orders.index') }}" class="client-btn secondary" style="text-align: center; text-decoration: none;">
+                📦 Meus Pedidos
+            </a>
+        </div>
+    </div>
+</div>
 @endsection

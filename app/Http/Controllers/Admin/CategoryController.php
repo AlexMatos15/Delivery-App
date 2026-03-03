@@ -39,7 +39,7 @@ class CategoryController extends Controller
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'max:2048'],
             'is_active' => ['boolean'],
-            'order' => ['integer', 'min:0'],
+            'display_order' => ['integer', 'min:0'],
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
@@ -71,7 +71,7 @@ class CategoryController extends Controller
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'max:2048'],
             'is_active' => ['boolean'],
-            'order' => ['integer', 'min:0'],
+            'display_order' => ['integer', 'min:0'],
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);

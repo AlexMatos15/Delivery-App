@@ -15,6 +15,8 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\ClientHomeController;
+use App\Http\Controllers\CheckoutController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,13 +24,28 @@ use Illuminate\Support\Facades\Route;
 | PUBLIC ROUTES
 |--------------------------------------------------------------------------
 */
+// Welcome page (public)
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
-// Public product routes
-Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+// Auth login/register (public)
+// These are defined in routes/auth.php
+
+/*
+|--------------------------------------------------------------------------
+| PROTECTED CLIENT ROUTES
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'verified', 'is_cliente'])->group(function () {
+    // Cliente Home (products listing)
+    Route::get('/client/home', [ClientHomeController::class, 'index'])->name('client.home');
+    Route::post('/client/store/select', [ClientHomeController::class, 'selectStore'])->name('client.store.select');
+    
+    // Public product routes (accessible only to authenticated clients)
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -43,10 +60,12 @@ Route::get('/dashboard', DashboardRedirectController::class)->middleware(['auth'
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Profile routes
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::get('/my-profile', [ProfileController::class, 'show'])->name('profile.show');
+    // Profile routes - NOT accessible by shop users (only admin manages shop profiles)
+    Route::middleware('no_shop_profile')->group(function () {
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::get('/my-profile', [ProfileController::class, 'show'])->name('profile.show');
+    });
     
     // Address routes (accessible by all authenticated users)
     Route::resource('addresses', AddressController::class)->except(['show']);
@@ -60,25 +79,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{order}', [OrderController::class, 'show'])->name('show');
         Route::patch('/{order}/cancel', [OrderController::class, 'cancel'])->name('cancel');
     });
-});
-
-/*
-|--------------------------------------------------------------------------
-| CLIENTE ROUTES
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth', 'verified', 'is_cliente'])->prefix('cliente')->name('cliente.')->group(function () {
-    // Dashboard
-    Route::get('/dashboard', [OrderController::class, 'index'])->name('dashboard');
     
-    // Cart routes
-    Route::prefix('cart')->name('cart.')->group(function () {
+    // Cart routes (for authenticated users - cliente level)
+    Route::middleware('is_cliente')->prefix('cart')->name('cart.')->group(function () {
         Route::get('/', [CartController::class, 'index'])->name('index');
         Route::post('/add/{product}', [CartController::class, 'add'])->name('add');
         Route::patch('/update/{product}', [CartController::class, 'update'])->name('update');
         Route::delete('/remove/{product}', [CartController::class, 'remove'])->name('remove');
         Route::delete('/clear', [CartController::class, 'clear'])->name('clear');
         Route::get('/count', [CartController::class, 'count'])->name('count');
+    });
+
+    // Checkout routes (for authenticated clients)
+    Route::middleware('is_cliente')->prefix('checkout')->name('client.')->group(function () {
+        Route::get('/', [CheckoutController::class, 'index'])->name('checkout');
+        Route::post('/', [CheckoutController::class, 'store'])->name('store');
+        Route::get('/confirmation/{order}', [CheckoutController::class, 'confirmation'])->name('order-confirmation');
     });
 });
 
@@ -90,6 +106,7 @@ Route::middleware(['auth', 'verified', 'is_cliente'])->prefix('cliente')->name('
 Route::middleware(['auth', 'verified', 'is_loja'])->prefix('loja')->name('loja.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [LojaDashboardController::class, 'index'])->name('dashboard');
+    Route::post('/toggle-status', [LojaDashboardController::class, 'toggleStatus'])->name('toggleStatus');
     
     // Pedidos
     Route::prefix('orders')->name('orders.')->group(function () {
@@ -101,6 +118,9 @@ Route::middleware(['auth', 'verified', 'is_loja'])->prefix('loja')->name('loja.'
     // Produtos
     Route::resource('products', LojaProductController::class);
     Route::patch('/products/{product}/toggle', [LojaProductController::class, 'toggleActive'])->name('products.toggle');
+
+    // Categorias (criação rápida)
+    Route::post('/categories', [LojaProductController::class, 'storeCategory'])->name('categories.store');
     
     // Relatórios
     Route::prefix('reports')->name('reports.')->group(function () {
@@ -130,6 +150,8 @@ Route::middleware(['auth', 'verified', 'is_admin'])->prefix('admin')->name('admi
     // Users Management
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserManagementController::class, 'index'])->name('index');
+        Route::get('/create', [UserManagementController::class, 'create'])->name('create');
+        Route::post('/', [UserManagementController::class, 'store'])->name('store');
         Route::patch('/{user}/toggle', [UserManagementController::class, 'toggleActive'])->name('toggle');
         Route::delete('/{user}', [UserManagementController::class, 'destroy'])->name('destroy');
     });

@@ -4,7 +4,33 @@
 
 @section('adminlte_css')
     @php
-        config(['adminlte.layout_topnav' => true]);
+        // Se for loja, use menu da loja
+        if (auth()->check() && auth()->user()->isShop()) {
+            config([
+                'adminlte.layout_topnav' => true,
+                'adminlte.classes_body' => 'loja',
+                'adminlte.menu' => [
+                    [
+                        'text' => 'Painel',
+                        'url' => 'loja/dashboard',
+                        'icon' => 'fas fa-tachometer-alt',
+                    ],
+                    [
+                        'text' => 'Pedidos',
+                        'url' => 'loja/orders',
+                        'icon' => 'fas fa-box',
+                    ],
+                    [
+                        'text' => 'Produtos',
+                        'url' => 'loja/products',
+                        'icon' => 'fas fa-cube',
+                    ],
+                ],
+            ]);
+        } else {
+            // Cliente ou admin
+            config(['adminlte.layout_topnav' => true]);
+        }
     @endphp
 @stop
 

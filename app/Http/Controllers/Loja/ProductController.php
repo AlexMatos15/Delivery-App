@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Loja;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
-use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
+    use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
     /**
      * Exibe lista de produtos da loja autenticada.
      */
@@ -44,6 +48,12 @@ class ProductController extends Controller
 
     /**
      * Armazena um novo produto.
+     * 
+     * Nota importante sobre SLUG:
+     * - O slug NÃO é enviado no formulário
+     * - O slug é gerado AUTOMATICAMENTE pelo Model (Product::booted)
+     * - Não precisa validar nem processar slug aqui
+     * - O Model garante unicidade do slug por loja (user_id)
      */
     public function store(): RedirectResponse
     {
@@ -51,6 +61,7 @@ class ProductController extends Controller
         
         $user = auth()->user();
         
+        // Validação: NÃO inclui 'slug' - ele é gerado automaticamente
         $validated = request()->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -65,7 +76,7 @@ class ProductController extends Controller
         // Validar promotional_price
         if ($validated['promotional_price'] ?? null) {
             if ($validated['promotional_price'] >= $validated['price']) {
-                return back()->with('error', 'Preço promocional deve ser menor que o preço regular.');
+                return back()->withInput()->with('error', 'Preço promocional deve ser menor que o preço regular.');
             }
         }
         
@@ -76,9 +87,11 @@ class ProductController extends Controller
             $validated['image'] = $path;
         }
         
+        // Associar produto à loja autenticada
         $validated['user_id'] = $user->id;
         $validated['is_active'] = true;
         
+        // Criar produto - o slug será gerado automaticamente pelo Model
         Product::create($validated);
         
         return redirect()->route('loja.products.index')
@@ -99,11 +112,17 @@ class ProductController extends Controller
 
     /**
      * Atualiza um produto.
+     * 
+     * Nota importante sobre SLUG:
+     * - O slug NÃO é enviado no formulário
+     * - Se o nome mudar, o slug é regerado AUTOMATICAMENTE pelo Model
+     * - Não precisa validar nem processar slug aqui
      */
     public function update(Product $product): RedirectResponse
     {
         $this->authorize('update', $product);
         
+        // Validação: NÃO inclui 'slug' - ele é atualizado automaticamente se o nome mudar
         $validated = request()->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -170,5 +189,36 @@ class ProductController extends Controller
         
         return redirect()->route('loja.products.index')
             ->with('success', 'Produto deletado com sucesso.');
+    }
+
+    /**
+     * Cria uma categoria rapidamente a partir do formulário da loja.
+     */
+    public function storeCategory(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $baseSlug = Str::slug($validated['name']);
+        $slug = $baseSlug;
+        $counter = 1;
+
+        while (Category::where('slug', $slug)->exists()) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+
+        Category::create([
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+            'slug' => $slug,
+            'is_active' => true,
+            'order' => 0,
+        ]);
+
+        return redirect()->route('loja.products.create')
+            ->with('success', 'Categoria criada com sucesso.');
     }
 }

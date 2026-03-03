@@ -1,179 +1,185 @@
-@extends('adminlte::page')
+@extends('layouts.client')
 
-@section('title', 'Produtos')
-
-@section('adminlte_css')
-    @php
-        config(['adminlte.layout_topnav' => true]);
-    @endphp
-@stop
+@section('title', 'Produtos - ' . config('app.name'))
 
 @section('content')
-    <div class="container-fluid">
-        <!-- Busca e Filtros -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Buscar Produtos</h3>
-                    </div>
-                    <div class="card-body">
-                        <form method="GET" action="{{ route('products.index') }}" class="row">
-                            <!-- Busca -->
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <label>Pesquisar</label>
-                                    <input type="text" 
-                                           name="search" 
-                                           value="{{ request('search') }}" 
-                                           placeholder="Buscar produtos..." 
-                                           class="form-control">
-                                </div>
-                            </div>
-                            
-                            <!-- Categoria -->
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Categoria</label>
-                                    <select name="category" class="form-control">
-                                        <option value="">Todas as Categorias</option>
-                                        @foreach ($categories as $category)
-                                            <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                                                {{ $category->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
+<div class="client-products-container">
+    <!-- Cabeçalho -->
+    <div class="client-products-header">
+        <h1 class="client-products-title">🍔 Produtos</h1>
+        <p class="client-products-subtitle">Explore nosso cardápio delicioso</p>
+    </div>
 
-                            <!-- Destaque -->
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>&nbsp;</label>
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="featured" name="featured" value="1" {{ request('featured') ? 'checked' : '' }}>
-                                        <label class="custom-control-label" for="featured">
-                                            Apenas Destaques
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+    <!-- Barra de Busca e Filtros -->
+    <div class="client-section" style="margin-bottom: 24px;">
+        <form method="GET" action="{{ route('products.index') }}" style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+            <!-- Busca -->
+            <div class="client-form-group">
+                <input type="text" name="search" class="client-form-input" 
+                       placeholder="🔍 Buscar produto..." 
+                       value="{{ request('search') }}"
+                       style="padding: 14px;">
+            </div>
+
+            <!-- Filtros e Busca (grid responsivo) -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div>
+                    <select name="category" class="client-form-input">
+                        <option value="">📁 Todas as categorias</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}"
+                                    {{ request('category') == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <input type="checkbox" name="featured" value="1" 
+                               {{ request('featured') ? 'checked' : '' }}>
+                        <span style="font-weight: 600; font-size: 14px;">⭐ Destaques</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Botão Buscar -->
+            <button type="submit" class="client-btn client-btn-primary" style="width: 100%;">
+                🔍 Buscar
+            </button>
+            
+            @if (request()->hasAny(['search', 'category', 'featured']))
+                <a href="{{ route('products.index') }}" class="client-btn client-btn-secondary" 
+                   style="width: 100%; text-decoration: none; text-align: center;">
+                    ✕ Limpar Filtros
+                </a>
+            @endif
+        </form>
+    </div>
+
+    <!-- Grid de Produtos -->
+    @if ($products->isEmpty())
+        <div class="client-alert client-alert-info">
+            <strong>😕 Nenhum produto encontrado</strong>
+            <p>Tente mudar os filtros e tentar novamente</p>
+        </div>
+    @else
+        <div class="client-products-grid">
+            @foreach ($products as $product)
+                <div class="client-product-card">
+                    <!-- Imagem -->
+                    <div class="client-product-image">
+                        @if ($product->image)
+                            <img src="{{ asset('storage/' . $product->image) }}" 
+                                 alt="{{ $product->name }}"
+                                 style="width: 100%; height: 100%; object-fit: cover;">
+                        @else
+                            <span>🍔</span>
+                        @endif
                         
-                        <!-- Botões -->
-                        <div class="row">
-                            <div class="col-12">
-                                <button type="submit" form="search-form" class="btn btn-primary">
-                                    <i class="fas fa-search"></i> Filtrar
-                                </button>
-                                @if(request()->hasAny(['search', 'category', 'featured']))
-                                    <a href="{{ route('products.index') }}" class="btn btn-secondary">
-                                        <i class="fas fa-times"></i> Limpar
-                                    </a>
-                                @endif
+                        @if ($product->is_featured)
+                            <div style="position: absolute; top: 8px; right: 8px; background: var(--client-warning); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700;">
+                                ⭐ Destaque
                             </div>
+                        @endif
+                    </div>
+
+                    <!-- Corpo -->
+                    <div class="client-product-body">
+                        <h3 class="client-product-name">{{ $product->name }}</h3>
+
+                        <!-- Preço -->
+                        <div class="client-product-price">
+                            @if ($product->promotional_price)
+                                <span class="client-product-price-old">
+                                    R$ {{ number_format($product->price, 2, ',', '.') }}
+                                </span>
+                            @endif
+                            <span>R$ {{ number_format($product->getCurrentPrice(), 2, ',', '.') }}</span>
+                        </div>
+
+                        <!-- Estoque -->
+                        @if ($product->stock <= 0)
+                            <div class="client-product-stock out">
+                                ❌ Fora de estoque
+                            </div>
+                        @elseif ($product->stock < 5)
+                            <div class="client-product-stock low">
+                                ⚠️ Apenas {{ $product->stock }} disponível(is)
+                            </div>
+                        @else
+                            <div class="client-product-stock">
+                                ✅ Disponível
+                            </div>
+                        @endif
+
+                        <!-- Ações -->
+                        <div class="client-product-actions">
+                            @auth
+                                @if (auth()->user()->isClient())
+                                    @if ($product->stock > 0)
+                                        <form method="POST" action="{{ route('cart.add', $product) }}" 
+                                              style="width: 100%;">
+                                            @csrf
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="client-product-btn client-product-btn-add">
+                                                Adicionar
+                                            </button>
+                                        </form>
+                                    @else
+                                        <button class="client-product-btn client-product-btn-add" 
+                                                disabled
+                                                title="Produto sem estoque">
+                                            Indisponível
+                                        </button>
+                                    @endif
+                                @else
+                                    <button class="client-product-btn client-product-btn-add" 
+                                            disabled
+                                            title="Apenas clientes podem comprar">
+                                        Apenas clientes
+                                    </button>
+                                @endif
+                            @else
+                                <a href="{{ route('login') }}" class="client-product-btn client-product-btn-add"
+                                   style="text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center;">
+                                    Entrar
+                                </a>
+                            @endauth
                         </div>
                     </div>
                 </div>
-            </div>
+            @endforeach
         </div>
 
-        <!-- Grid de Produtos -->
-        @if ($products->count() > 0)
-            <div class="row">
-                @foreach ($products as $product)
-                    <div class="col-md-3 col-sm-6 col-12 mb-4">
-                        <div class="card h-100">
-                            <!-- Imagem do Produto -->
-                            <div style="position: relative; height: 250px; overflow: hidden;">
-                                @if ($product->image)
-                                    <img src="{{ asset('storage/' . $product->image) }}" 
-                                         alt="{{ $product->name }}" 
-                                         style="width: 100%; height: 100%; object-fit: cover;">
-                                @else
-                                    <div style="width: 100%; height: 100%; background-color: #e9ecef; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fas fa-image fa-3x text-muted"></i>
-                                    </div>
-                                @endif
-                                
-                                @if ($product->is_featured)
-                                    <span class="badge badge-warning" style="position: absolute; top: 10px; left: 10px;">
-                                        <i class="fas fa-star"></i> Destaque
-                                    </span>
-                                @endif
-                                
-                                @if ($product->isOnSale())
-                                    <span class="badge badge-danger" style="position: absolute; top: 10px; right: 10px;">
-                                        PROMOÇÃO
-                                    </span>
-                                @endif
-                            </div>
+        <!-- Info de paginação -->
+        <div style="text-align: center; padding: 20px 0; color: var(--client-text-light); margin-bottom: 40px;">
+            <p>
+                Mostrando {{ $products->count() }} de 
+                {{ \App\Models\Product::where('is_active', true)->where('stock', '>', 0)->count() }} 
+                produtos disponíveis
+            </p>
+        </div>
+    @endif
+</div>
 
-                            <!-- Informações do Produto -->
-                            <div class="card-body pb-2">
-                                <h5 class="card-title">{{ $product->name }}</h5>
-                                <p class="text-muted small">{{ $product->category->name }}</p>
-                                
-                                <!-- Preço -->
-                                @if ($product->isOnSale())
-                                    <p class="text-muted small" style="text-decoration: line-through;">
-                                        R$ {{ number_format($product->price, 2, ',', '.') }}
-                                    </p>
-                                    <h4 class="text-success font-weight-bold">
-                                        R$ {{ number_format($product->promotional_price, 2, ',', '.') }}
-                                    </h4>
-                                @else
-                                    <h4 class="text-dark font-weight-bold">
-                                        R$ {{ number_format($product->price, 2, ',', '.') }}
-                                    </h4>
-                                @endif
-
-                                <!-- Estoque -->
-                                <p class="text-muted small mb-3">
-                                    <i class="fas fa-box"></i> {{ $product->stock }} em estoque
-                                </p>
-
-                                <!-- Formulário de Adicionar ao Carrinho -->
-                                <form method="POST" action="{{ route('cart.add', $product) }}">
-                                    @csrf
-                                    <div class="input-group input-group-sm mb-2">
-                                        <input type="number" 
-                                               name="quantity" 
-                                               value="1" 
-                                               min="1" 
-                                               max="{{ $product->stock }}" 
-                                               class="form-control" 
-                                               placeholder="Qtd">
-                                        <div class="input-group-append">
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="fas fa-cart-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-
-            <!-- Paginação -->
-            <div class="row">
-                <div class="col-12">
-                    {{ $products->links('pagination::bootstrap-4') }}
-                </div>
-            </div>
-        @else
-            <!-- Nenhum Produto -->
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body text-center py-5">
-                        <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
-                        <h4>Nenhum produto encontrado</h4>
-                        <p class="text-muted">Tente ajustar seus filtros ou critérios de busca</p>
-                    </div>
-                </div>
-            </div>
-        @endif
-    </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cartForms = document.querySelectorAll('form[action*="cart/add"]');
+    cartForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const btn = form.querySelector('button');
+            const originalText = btn.textContent;
+            btn.textContent = '✓ Adicionado!';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }, 2000);
+        });
+    });
+});
+</script>
 @endsection

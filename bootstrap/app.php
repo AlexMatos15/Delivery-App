@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'is_loja' => \App\Http\Middleware\IsLoja::class,
             'is_cliente' => \App\Http\Middleware\IsCliente::class,
             'active' => \App\Http\Middleware\EnsureUserIsActive::class,
+            'no_shop_profile' => \App\Http\Middleware\PreventShopProfileAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

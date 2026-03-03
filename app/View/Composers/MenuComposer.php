@@ -132,11 +132,6 @@ class MenuComposer
             ],
             ['header' => 'CONTA'],
             [
-                'text' => 'Perfil',
-                'url' => 'my-profile',
-                'icon' => 'fas fa-user',
-            ],
-            [
                 'text' => 'Alterar Senha',
                 'url' => 'password',
                 'icon' => 'fas fa-lock',

@@ -1,12 +1,6 @@
-@extends('adminlte::page')
+@extends('layouts.client')
 
-@section('title', 'Finalizar Compra')
-
-@section('adminlte_css')
-    @php
-        config(['adminlte.layout_topnav' => true]);
-    @endphp
-@stop
+@section('title', 'Finalizar Compra - ' . config('app.name'))
 
 @section('content')
     <div class="container-fluid">

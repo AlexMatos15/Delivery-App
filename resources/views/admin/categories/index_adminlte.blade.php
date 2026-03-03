@@ -62,7 +62,7 @@
                                             <a href="{{ route('admin.categories.edit', $category) }}" class="btn btn-sm btn-info" title="Editar">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <form method="POST" action="{{ route('admin.categories.toggle-status', $category) }}" style="display: inline;">
+                                            <form method="POST" action="{{ route('admin.categories.toggle', $category) }}" style="display: inline;">
                                                 @csrf
                                                 @method('PATCH')
                                                 <button type="submit" class="btn btn-sm {{ $category->is_active ? 'btn-warning' : 'btn-success' }}" title="{{ $category->is_active ? 'Desativar' : 'Ativar' }}">

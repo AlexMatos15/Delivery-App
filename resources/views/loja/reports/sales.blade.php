@@ -4,8 +4,32 @@
 
 @section('adminlte_css')
     @php
-        config(['adminlte.layout_topnav' => true]);
+        config([
+            'adminlte.layout_topnav' => true,
+            'adminlte.classes_body' => 'loja',
+            'adminlte.menu' => [
+                [
+                    'text' => 'Painel',
+                    'url' => 'loja/dashboard',
+                    'icon' => 'fas fa-tachometer-alt',
+                ],
+                [
+                    'text' => 'Pedidos',
+                    'url' => 'loja/orders',
+                    'icon' => 'fas fa-box',
+                ],
+                [
+                    'text' => 'Produtos',
+                    'url' => 'loja/products',
+                    'icon' => 'fas fa-cube',
+                ],
+            ],
+        ]);
     @endphp
+@stop
+
+@section('css')
+    @include('loja.partials.styles')
 @stop
 
 @section('content')

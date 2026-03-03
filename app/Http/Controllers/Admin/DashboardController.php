@@ -48,7 +48,6 @@ class DashboardController extends Controller
 
         // Top products (by order items)
         $topProducts = Product::withCount('orderItems')
-            ->having('order_items_count', '>', 0)
             ->orderBy('order_items_count', 'desc')
             ->limit(5)
             ->get();

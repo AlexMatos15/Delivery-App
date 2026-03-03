@@ -16,36 +16,58 @@ class CartController extends Controller
         $cart = $this->getCart();
         $total = $this->calculateTotal($cart);
         
-        return view('cart.index', compact('cart', 'total'));
+        return view('client.cart', compact('cart', 'total'));
     }
 
     /**
      * Add a product to the cart.
+     * 
+     * REGRA DE NEGÓCIO CRÍTICA:
+     * Um carrinho pertence a UMA ÚNICA LOJA.
+     * Se o cliente tentar adicionar um produto de outra loja, é bloqueado com erro claro.
      */
     public function add(Request $request, Product $product)
     {
+        // Validar quantidade
         $request->validate([
             'quantity' => 'required|integer|min:1|max:' . $product->stock,
         ]);
 
+        // Verificar se produto está ativo e com estoque
         if (!$product->is_active || $product->stock < $request->quantity) {
-            return back()->with('error', __('Product not available or insufficient stock.'));
+            return back()->with('error', 'Produto indisponível ou estoque insuficiente.');
         }
 
         $cart = $this->getCart();
+        $cartStoreId = $this->getCartStoreId();
+        
+        /**
+         * VALIDAÇÃO DE LOJA:
+         * Se o carrinho já tem uma loja associada, verificar se é a mesma do produto
+         */
+        if ($cartStoreId !== null && $cartStoreId !== $product->user_id) {
+            // Carrinho contém produtos de outra loja
+            return back()->with('error', 
+                'Seu carrinho contém itens de outra loja. ' .
+                'Finalize a compra ou limpe o carrinho antes de adicionar produtos de outro vendedor.'
+            );
+        }
+
         $productId = $product->id;
 
         if (isset($cart[$productId])) {
-            // Update quantity if product already in cart
+            // Atualizar quantidade se produto já está no carrinho
             $newQuantity = $cart[$productId]['quantity'] + $request->quantity;
             
             if ($newQuantity > $product->stock) {
-                return back()->with('error', __('Insufficient stock. Available: :stock', ['stock' => $product->stock]));
+                return back()->with('error', 
+                    'Estoque insuficiente. Disponível: ' . $product->stock
+                );
             }
             
             $cart[$productId]['quantity'] = $newQuantity;
         } else {
-            // Add new product to cart
+            // Adicionar novo produto ao carrinho
             $cart[$productId] = [
                 'product_id' => $product->id,
                 'name' => $product->name,
@@ -56,17 +78,18 @@ class CartController extends Controller
             ];
         }
 
-        $this->saveCart($cart);
+        // Salvar carrinho com a loja associada
+        $this->saveCart($cart, $product->user_id);
 
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => __('Product added to cart!'),
+                'message' => 'Produto adicionado ao carrinho!',
                 'cart_count' => $this->getCartCount(),
             ]);
         }
 
-        return back()->with('status', __('Product added to cart!'));
+        return back()->with('status', 'Produto adicionado ao carrinho!');
     }
 
     /**
@@ -81,30 +104,32 @@ class CartController extends Controller
         $cart = $this->getCart();
 
         if (!isset($cart[$productId])) {
-            return back()->with('error', __('Product not found in cart.'));
+            return back()->with('error', 'Produto não encontrado no carrinho.');
         }
 
         $product = Product::find($productId);
         
         if (!$product || $request->quantity > $product->stock) {
-            return back()->with('error', __('Insufficient stock. Available: :stock', ['stock' => $product->stock ?? 0]));
+            return back()->with('error', 
+                'Estoque insuficiente. Disponível: ' . ($product->stock ?? 0)
+            );
         }
 
         $cart[$productId]['quantity'] = $request->quantity;
-        $this->saveCart($cart);
+        $this->saveCart($cart, $this->getCartStoreId());
 
         if ($request->expectsJson()) {
             $total = $this->calculateTotal($cart);
             return response()->json([
                 'success' => true,
-                'message' => __('Cart updated!'),
+                'message' => 'Carrinho atualizado!',
                 'cart_count' => $this->getCartCount(),
                 'total' => $total,
                 'item_subtotal' => $cart[$productId]['price'] * $cart[$productId]['quantity'],
             ]);
         }
 
-        return back()->with('status', __('Cart updated!'));
+        return back()->with('status', 'Carrinho atualizado!');
     }
 
     /**
@@ -116,20 +141,20 @@ class CartController extends Controller
 
         if (isset($cart[$productId])) {
             unset($cart[$productId]);
-            $this->saveCart($cart);
+            $this->saveCart($cart, $this->getCartStoreId());
         }
 
         if (request()->expectsJson()) {
             $total = $this->calculateTotal($cart);
             return response()->json([
                 'success' => true,
-                'message' => __('Product removed from cart!'),
+                'message' => 'Produto removido do carrinho!',
                 'cart_count' => $this->getCartCount(),
                 'total' => $total,
             ]);
         }
 
-        return back()->with('status', __('Product removed from cart!'));
+        return back()->with('status', 'Produto removido do carrinho!');
     }
 
     /**
@@ -138,15 +163,16 @@ class CartController extends Controller
     public function clear()
     {
         Session::forget('cart');
+        Session::forget('cart_store_id');
         
         if (request()->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => __('Cart cleared!'),
+                'message' => 'Carrinho limpo!',
             ]);
         }
 
-        return back()->with('status', __('Cart cleared!'));
+        return back()->with('status', 'Carrinho limpo!');
     }
 
     /**
@@ -168,11 +194,35 @@ class CartController extends Controller
     }
 
     /**
-     * Save cart to session.
+     * Get store_id associated with current cart.
+     * 
+     * Retorna null se o carrinho está vazio.
+     * Caso contrário, retorna o ID da loja.
      */
-    protected function saveCart(array $cart): void
+    protected function getCartStoreId(): ?int
+    {
+        return Session::get('cart_store_id');
+    }
+
+    /**
+     * Save cart to session with store association.
+     * 
+     * @param array $cart Array com produtos do carrinho
+     * @param int|null $storeId ID da loja (user_id do vendedor)
+     */
+    protected function saveCart(array $cart, ?int $storeId = null): void
     {
         Session::put('cart', $cart);
+        
+        // Se o carrinho não está vazio, associar à loja
+        if (!empty($cart) && $storeId !== null) {
+            Session::put('cart_store_id', $storeId);
+        }
+        
+        // Se o carrinho ficou vazio, limpar a associação com a loja
+        if (empty($cart)) {
+            Session::forget('cart_store_id');
+        }
     }
 
     /**

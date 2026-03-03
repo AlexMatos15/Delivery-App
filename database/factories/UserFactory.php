@@ -29,6 +29,9 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'type' => 'client',
+            'is_admin' => false,
+            'is_active' => true,
         ];
     }
 
@@ -39,6 +42,49 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Create an admin user.
+     */
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => 'admin',
+            'is_admin' => true,
+        ]);
+    }
+
+    /**
+     * Create a shop user.
+     */
+    public function shop(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => 'shop',
+            'is_admin' => false,
+        ]);
+    }
+
+    /**
+     * Create a client user.
+     */
+    public function client(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => 'client',
+            'is_admin' => false,
+        ]);
+    }
+
+    /**
+     * Create an inactive user.
+     */
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_active' => false,
         ]);
     }
 }

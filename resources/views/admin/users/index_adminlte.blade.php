@@ -9,7 +9,7 @@
                 <div class="card-header">
                     <h3 class="card-title">Gerenciar Usuários</h3>
                     <div class="card-tools">
-                        <a href="{{ route('register') }}" class="btn btn-primary btn-sm">
+                        <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm">
                             <i class="fas fa-plus"></i> Novo Usuário
                         </a>
                     </div>

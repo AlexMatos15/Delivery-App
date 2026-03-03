@@ -30,7 +30,7 @@ class DashboardRedirectController extends Controller
         }
 
         if ($user->isCliente()) {
-            return redirect()->route('cliente.dashboard');
+            return redirect()->route('client.home');
         }
 
         // Se o role for inválido, retornar 403

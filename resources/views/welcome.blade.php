@@ -1,14 +1,789 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config('app.name') }} - Delivery Rápido e Seguro</title>
+    <link rel="stylesheet" href="{{ asset('css/welcome.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        document.documentElement.style.colorScheme = 'light';
+    </script>
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <a class="logo" href="/">🍔 {{ config('app.name') }}</a>
+            <div class="nav-links">
+                <a href="#features">Recursos</a>
+                <a href="#cta">Começar</a>
+                @auth
+                    <a href="{{ route('dashboard') }}" class="btn-secondary">Dashboard</a>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn-primary">Sair</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="btn-secondary">Entrar</a>
+                    <a href="{{ route('register') }}" class="btn-primary">Criar conta</a>
+                @endauth
+            </div>
+        </div>
+    </header>
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    <main>
+        <section class="hero">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <h1>Seu delivery favorito em <span class="text-primary">minutos</span>.</h1>
+                    <p>
+                        Encontre restaurantes, monte seu pedido e acompanhe a entrega em tempo real.
+                        Simples, rápido e seguro.
+                    </p>
+                    <div class="hero-buttons">
+                        @auth
+                            <a href="{{ url('/products') }}" class="btn-primary">Ver cardápio</a>
+                            <a href="{{ route('dashboard') }}" class="btn-secondary">Meu painel</a>
+                        @else
+                            <a href="{{ route('register') }}" class="btn-primary">Começar agora</a>
+                            <a href="{{ route('login') }}" class="btn-secondary">Entrar</a>
+                        @endauth
+                    </div>
+                </div>
+                <div class="hero-image" aria-hidden="true">
+                    <i class="fa-solid fa-motorcycle"></i>
+                </div>
+            </div>
+        </section>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+        <section id="features" class="features">
+            <div class="features-container">
+                <h2 class="section-title">Por que escolher {{ config('app.name') }}?</h2>
+                <p class="section-subtitle">Entrega confiável, rápida e segura para o seu dia a dia.</p>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <span class="feature-icon"><i class="fa-solid fa-bolt"></i></span>
+                        <h3>Entrega rápida</h3>
+                        <p>Receba seu pedido quentinho com rastreamento em tempo real.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon"><i class="fa-solid fa-lock"></i></span>
+                        <h3>Pagamento seguro</h3>
+                        <p>Pague com Pix, cartão ou na entrega. Tudo protegido.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon"><i class="fa-solid fa-star"></i></span>
+                        <h3>Avaliações reais</h3>
+                        <p>Veja opiniões de outros clientes antes de escolher.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon"><i class="fa-solid fa-headset"></i></span>
+                        <h3>Suporte dedicado</h3>
+                        <p>Atendimento rápido para tirar dúvidas e resolver problemas.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon"><i class="fa-solid fa-credit-card"></i></span>
+                        <h3>Pagamentos flexíveis</h3>
+                        <p>Escolha a forma de pagamento que melhor funciona para você.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon"><i class="fa-solid fa-location-dot"></i></span>
+                        <h3>Endereços salvos</h3>
+                        <p>Cadastre seus endereços e faça pedidos mais rápido.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cta" class="cta">
+            <div class="cta-container">
+                <h2>Pronto para pedir?</h2>
+                <p>Crie sua conta gratuita e aproveite o melhor do delivery na sua cidade.</p>
+                @auth
+                    <a href="{{ url('/products') }}" class="btn-primary">Explorar cardápio</a>
+                @else
+                    <a href="{{ route('register') }}" class="btn-primary">Criar conta grátis</a>
+                @endauth
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>Sobre</h4>
+                <ul>
+                    <li><a href="#">Quem somos</a></li>
+                    <li><a href="#">Trabalhe conosco</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Ajuda</h4>
+                <ul>
+                    <li><a href="#">Central de suporte</a></li>
+                    <li><a href="#">Políticas</a></li>
+                    <li><a href="#">Privacidade</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Para você</h4>
+                <ul>
+                    <li><a href="#">Cupons</a></li>
+                    <li><a href="#">Promoções</a></li>
+                    <li><a href="#">Parcerias</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Social</h4>
+                <ul>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">Facebook</a></li>
+                    <li><a href="#">WhatsApp</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © {{ date('Y') }} {{ config('app.name') }}. Todos os direitos reservados.
+        </div>
+    </footer>
+ </body>
+</html>
+@php return; @endphp
+{{--
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config('app.name') }} - Delivery Rápido e Seguro</title>
+    <link rel="stylesheet" href="{{ asset('css/welcome.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        document.documentElement.style.colorScheme = 'light';
+    </script>
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <a class="logo" href="/">🍔 {{ config('app.name') }}</a>
+            <div class="nav-links">
+                <a href="#features">Recursos</a>
+                <a href="#cta">Começar</a>
+                @auth
+                    <a href="{{ route('dashboard') }}" class="btn-secondary">Dashboard</a>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn-primary">Sair</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="btn-secondary">Entrar</a>
+                    <a href="{{ route('register') }}" class="btn-primary">Criar conta</a>
+                @endauth
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <h1>Seu delivery favorito em <span class="text-primary">minutos</span>.</h1>
+                    <p>
+                        Encontre restaurantes, monte seu pedido e acompanhe a entrega em tempo real.
+                        Simples, rápido e seguro.
+                    </p>
+                    <div class="hero-buttons">
+                        @auth
+                            <a href="{{ url('/products') }}" class="btn-primary">Ver cardápio</a>
+                            <a href="{{ route('dashboard') }}" class="btn-secondary">Meu painel</a>
+                        @else
+                            <a href="{{ route('register') }}" class="btn-primary">Começar agora</a>
+                            <a href="{{ route('login') }}" class="btn-secondary">Entrar</a>
+                        @endauth
+                    </div>
+                </div>
+                <div class="hero-image" aria-hidden="true">
+                    <i class="fa-solid fa-motorcycle"></i>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <div class="features-container">
+                <h2 class="section-title">Por que escolher {{ config('app.name') }}?</h2>
+                <p class="section-subtitle">Entrega confiável, rápida e segura para o seu dia a dia.</p>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <span class="feature-icon"><i class="fa-solid fa-bolt"></i></span>
+                        <h3>Entrega rápida</h3>
+                        <p>Receba seu pedido quentinho com rastreamento em tempo real.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon"><i class="fa-solid fa-lock"></i></span>
+                        <h3>Pagamento seguro</h3>
+                        <p>Pague com Pix, cartão ou na entrega. Tudo protegido.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon"><i class="fa-solid fa-star"></i></span>
+                        <h3>Avaliações reais</h3>
+                        <p>Veja opiniões de outros clientes antes de escolher.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon"><i class="fa-solid fa-headset"></i></span>
+                        <h3>Suporte dedicado</h3>
+                        <p>Atendimento rápido para tirar dúvidas e resolver problemas.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon"><i class="fa-solid fa-credit-card"></i></span>
+                        <h3>Pagamentos flexíveis</h3>
+                        <p>Escolha a forma de pagamento que melhor funciona para você.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon"><i class="fa-solid fa-location-dot"></i></span>
+                        <h3>Endereços salvos</h3>
+                        <p>Cadastre seus endereços e faça pedidos mais rápido.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cta" class="cta">
+            <div class="cta-container">
+                <h2>Pronto para pedir?</h2>
+                <p>Crie sua conta gratuita e aproveite o melhor do delivery na sua cidade.</p>
+                @auth
+                    <a href="{{ url('/products') }}" class="btn-primary">Explorar cardápio</a>
+                @else
+                    <a href="{{ route('register') }}" class="btn-primary">Criar conta grátis</a>
+                @endauth
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>Sobre</h4>
+                <ul>
+                    <li><a href="#">Quem somos</a></li>
+                    <li><a href="#">Trabalhe conosco</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Ajuda</h4>
+                <ul>
+                    <li><a href="#">Central de suporte</a></li>
+                    <li><a href="#">Políticas</a></li>
+                    <li><a href="#">Privacidade</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Para você</h4>
+                <ul>
+                    <li><a href="#">Cupons</a></li>
+                    <li><a href="#">Promoções</a></li>
+                    <li><a href="#">Parcerias</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Social</h4>
+                <ul>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">Facebook</a></li>
+                    <li><a href="#">WhatsApp</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © {{ date('Y') }} {{ config('app.name') }}. Todos os direitos reservados.
+        </div>
+    </footer>
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config('app.name') }} - Delivery Rápido e Seguro</title>
+    <link rel="stylesheet" href="{{ asset('css/welcome.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        document.documentElement.style.colorScheme = 'light';
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background: #f9fafb;
+        }
+
+        header {
+            background: white;
+            padding: 16px 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ef4444;
+            text-decoration: none;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-header {
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border: 1px solid #ef4444;
+        }
+
+        .btn-login {
+            color: #ef4444;
+            background: white;
+        }
+
+        .btn-login:hover {
+            background: #fef2f2;
+        }
+
+        .btn-register {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-register:hover {
+            background: #dc2626;
+        }
+
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            font-size: 18px;
+            color: #6b7280;
+            margin-bottom: 32px;
+        }
+
+        .highlight {
+            color: #ef4444;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn-primary {
+            background: #ef4444;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background: #dc2626;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #ef4444;
+            padding: 14px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: 1px solid #ef4444;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: #fef2f2;
+        }
+
+        .hero-image {
+            font-size: 120px;
+            text-align: center;
+        }
+
+        .features {
+            background: white;
+            padding: 60px 20px;
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 40px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: #f9fafb;
+            padding: 24px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+
+        .feature-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        .feature-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .how-it-works {
+            padding: 60px 20px;
+            background: #f9fafb;
+        }
+
+        .how-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .step {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-weight: 700;
+        }
+
+        .step h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .step p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 60px 20px;
+        }
+
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .cta-content h2 {
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .cta-content p {
+            font-size: 18px;
+            margin-bottom: 32px;
+            opacity: 0.9;
+        }
+
+        .cta-content .btn-primary {
+            background: white;
+            color: #ef4444;
+            font-size: 18px;
+            padding: 16px 48px;
+        }
+
+        .cta-content .btn-primary:hover {
+            background: #f9fafb;
+            color: #ef4444;
+        }
+
+        footer {
+            background: #1f2937;
+            color: white;
+            padding: 32px 20px;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 40px 20px;
+            }
+
+            .hero-content h1 {
+                font-size: 32px;
+            }
+
+            .hero-content p {
+                font-size: 16px;
+            }
+
+            .hero-image {
+                font-size: 80px;
+                order: -1;
+            }
+
+            .header-nav {
+                gap: 8px;
+            }
+
+            .btn-header {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-content h2 {
+                font-size: 28px;
+            }
+
+            .cta-content p {
+                font-size: 16px;
+            }
+        }
+    </style>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <a href="/" class="logo">🍔 {{ config('app.name') }}</a>
+            <nav class="header-nav">
+                @auth
+                    <a href="{{ route('dashboard') }}" class="btn-header btn-login">Dashboard</a>
+                    <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="btn-header btn-register">Logout</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="btn-header btn-login">Entrar</a>
+                    <a href="{{ route('register') }}" class="btn-header btn-register">Criar Conta</a>
+                @endauth
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Peça seu delivery em <span class="highlight">minutos</span></h1>
+            <p>A forma mais rápida e fácil de pedir comida. Escolha entre centenas de restaurantes, monte seu pedido e receba em casa.</p>
+            <div class="hero-actions">
+                <a href="{{ route('register') }}" class="btn-primary">Começar Agora</a>
+                <a href="{{ route('login') }}" class="btn-secondary">Entrar</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            🚗
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="features-container">
+            <h2 class="section-title">Por que escolher {{ config('app.name') }}?</h2>
+            <p class="section-subtitle">Entrega confiável, rápida e segura todos os dias</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Entrega Rápida</h3>
+                    <p>Seus pedidos chegam quentinhos. Rastreamento em tempo real do seu delivery.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💳</div>
+                    <h3>Pagamento Fácil</h3>
+                    <p>Pague com Pix, Cartão de Crédito, Débito ou até na entrega. Seu jeito.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🍽️</div>
+                    <h3>Muitas Opções</h3>
+                    <p>Centenas de restaurantes e lojas para você escolher. Sempre algo novo.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>100% Seguro</h3>
+                    <p>Seus dados estão protegidos. Compre com tranquilidade e segurança.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📍</div>
+                    <h3>Endereço Salvo</h3>
+                    <p>Salve seus endereços favoritos. Próximos pedidos são mais rápidos.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⭐</div>
+                    <h3>Avaliações Reais</h3>
+                    <p>Veja avaliações de outros clientes. Escolha os melhores restaurantes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <div class="how-container">
+            <h2 class="section-title">Como Funciona</h2>
+            <p class="section-subtitle">Rápido, simples e delicioso em 3 passos</p>
+
+            <div class="steps-grid">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Escolha o Restaurante</h3>
+                    <p>Navegue por centenas de opções e encontre seu favorito. Veja cardápios e avaliações.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Monte seu Pedido</h3>
+                    <p>Escolha o que deseja, customize sua ordem e adicione ao carrinho. Fácil assim.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Receba em Casa</h3>
+                    <p>Acompanhe a entrega em tempo real e receba quentinho. Aproveite o seu prato!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Pronto para pedir?</h2>
+            <p>Junte-se a milhares de clientes satisfeitos. Seu primeiro pedido está à espera.</p>
+            <a href="{{ route('register') }}" class="btn-primary">Criar Conta Grátis</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p class="footer-text">© {{ date('Y') }} {{ config('app.name') }}. Todos os direitos reservados.</p>
+            <p class="footer-text" style="margin-top: 8px; font-size: 12px;">Entrega rápida | Segurança garantida | Atendimento 24/7</p>
+        </div>
+    </footer>
+</body>
+</html>
+{{--
 
         <!-- Styles / Scripts -->
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
@@ -275,3 +1050,5 @@
         @endif
     </body>
 </html>
+--}}
+--}}
